@@ -3,7 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_main.xml" value="0.2706209453197405" />
+        <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_splash.xml" value="0.37083333333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_add_post.xml" value="0.37864583333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_home.xml" value="0.37864583333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_notification.xml" value="0.37864583333333335" />
