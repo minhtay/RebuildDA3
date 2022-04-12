@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "2848576765",
+    "project_id": "doan3-24d93",
+    "storage_bucket": "doan3-24d93.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:2848576765:android:5b537c9d2359929f49da94",
+        "android_client_info": {
+          "package_name": "com.example.doan3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "2848576765-6p5bsvqhtock33rv6kv8bstd97j90t9m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.doan3",
+            "certificate_hash": "c2d86618380fa2ed77c02ec2645a3e0a8047b917"
+          }
+        },
+        {
+          "client_id": "2848576765-0vro2u0sluhfqpjgca348e9hfku1obot.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpka0vyQ6__U37ujT_Xra2RZC8NV6-dUo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "2848576765-0vro2u0sluhfqpjgca348e9hfku1obot.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
