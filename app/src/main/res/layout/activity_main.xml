@@ -16,11 +16,11 @@
         android:layout_height="0dp"
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_bottom"
-        android:layout_weight="9"/>
+        android:layout_weight="9.3"/>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="0.7"
         android:id="@+id/bottom_nav"
         app:menu="@menu/bottom_nav"/>
 </LinearLayout>

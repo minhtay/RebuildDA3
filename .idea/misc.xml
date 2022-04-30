@@ -5,17 +5,17 @@
       <map>
         <entry key="..\:/Android Project/DoAn3/DoAn3/app/src/main/res/layout/activity_login.xml" value="0.23148148148148148" />
         <entry key="..\:/Android Project/DoAn3/DoAn3/app/src/main/res/layout/activity_signup.xml" value="0.4" />
-        <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
+        <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_login.xml" value="0.1" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_main.xml" value="0.2706209453197405" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_splash.xml" value="0.37083333333333335" />
-        <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_add_post.xml" value="0.37864583333333335" />
+        <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_add_post.xml" value="0.33" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_home.xml" value="0.37864583333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_notification.xml" value="0.37864583333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/menu/bottom_nav.xml" value="0.37864583333333335" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">DoAn3</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="facebook_app_id">321967610019256</string>
+    <string name="fb_login_protocol_scheme">fb321967610019256</string>
+
+
 </resources>

@@ -48,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
 
         // sét sự kiện click cho btn
         binding.btnLogin.setOnClickListener { loginToAccount() }
-        binding.btnFacebook.setOnClickListener { loginToFaceBook() }
+        loginToFaceBook()
         binding.btnGoogle.setOnClickListener { loginToGoogle() }
 
         // tắt bàn phím ảo bằng click vào màn hình
@@ -67,7 +67,7 @@ class LoginActivity : AppCompatActivity() {
         })
 
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("2848576765-6p5bsvqhtock33rv6kv8bstd97j90t9m.apps.googleusercontent.com")
+            .requestIdToken("2848576765-0vro2u0sluhfqpjgca348e9hfku1obot.apps.googleusercontent.com")
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
@@ -90,9 +90,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             } else Log.w(TAG, exception.toString())
         }
-/*
         callbackManager.onActivityResult(requestCode, resultCode, data)
-*/
 
     }
 
@@ -176,6 +174,9 @@ class LoginActivity : AppCompatActivity() {
         callbackManager = CallbackManager.Factory.create()
         binding.btnFacebook.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {
+                if (LoginManager.getInstance()== null){
+                    LoginManager.getInstance().logOut()
+                }else {
                 LoginManager.getInstance().logInWithReadPermissions(
                     this@LoginActivity, Arrays.asList("email", "public_profile")
                 )
@@ -193,7 +194,7 @@ class LoginActivity : AppCompatActivity() {
                             Log.d("facebooklogin","$error")
                         }
                     })
-            }
+            }}
         })
     }
 
