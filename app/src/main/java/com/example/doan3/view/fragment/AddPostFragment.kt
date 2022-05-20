@@ -37,6 +37,8 @@ class AddPostFragment : Fragment() {
 
         fAuth = FirebaseAuth.getInstance()
 
+        binding.constraintLayout5.visibility = View.GONE
+
         binding.btnPickimage.setOnClickListener{ pickImage()}
         binding.btnClear.setOnClickListener { clearImage() }
 

@@ -142,9 +142,10 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginToAccount() {
-        val email = binding.edtEmail.text.toString()
-        val pass = binding.edtPass.text.toString()
+
         if (checkValid()) {
+            val email = binding.edtEmail.text.toString()
+            val pass = binding.edtPass.text.toString()
             fAuth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this) {
                     if (it.isSuccessful) {
@@ -234,7 +235,7 @@ class LoginActivity : AppCompatActivity() {
         } else {
             binding.tilEmail.error = null
         }
-        if (binding.edtEmail.text.toString().matches(emailValidation.toRegex())) {
+        if (!binding.edtEmail.text.toString().matches(emailValidation.toRegex())) {
             binding.tilEmail.error = "Email invalid"
             return false
         } else {
