@@ -27,7 +27,7 @@
                 tools:ignore="MissingConstraints" />
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/btnMenuHome"
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="20dp"
@@ -37,13 +37,15 @@
                 tools:ignore="SpeakableTextPresentCheck" />
 
             <ImageButton
+                android:id="@+id/btnSearch"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginEnd="10dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_search"
-                app:layout_constraintEnd_toStartOf="@+id/imageView2"
-                tools:ignore="MissingConstraints,SpeakableTextPresentCheck" />
+                app:layout_constraintEnd_toStartOf="@+id/btnMenuHome"
+                tools:ignore="MissingConstraints,SpeakableTextPresentCheck"
+                android:contentDescription="TODO" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

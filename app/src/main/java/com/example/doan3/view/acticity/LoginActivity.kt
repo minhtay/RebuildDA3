@@ -118,8 +118,7 @@ class LoginActivity : AppCompatActivity() {
                 user!!.uid,
                 user.displayName,
                 user.photoUrl.toString(),
-                user.email,
-                user.phoneNumber
+                user.email
             )
             val ref = FirebaseDatabase.getInstance().getReference("User")
             ref.addValueEventListener(object : ValueEventListener {

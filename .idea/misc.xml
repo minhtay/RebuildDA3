@@ -7,12 +7,15 @@
         <entry key="..\:/Android Project/DoAn3/DoAn3/app/src/main/res/layout/activity_signup.xml" value="0.4" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_login.xml" value="0.5" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_profile.xml" value="0.18541666666666667" />
+        <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_search.xml" value="0.18541666666666667" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_signup.xml" value="0.3625" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_splash.xml" value="0.37083333333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_add_post.xml" value="0.33" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_home.xml" value="0.37864583333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_notification.xml" value="0.37864583333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/menu/bottom_nav.xml" value="0.37864583333333335" />
+        <entry key="..\:/Android/DoAn3/app/src/main/res/menu/menu_appbar.xml" value="0.3625" />
       </map>
     </option>
   </component>
