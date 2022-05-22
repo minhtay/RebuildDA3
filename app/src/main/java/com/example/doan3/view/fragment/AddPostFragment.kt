@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.navigation.R
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.doan3.data.ReadUserData
@@ -116,7 +117,7 @@ class AddPostFragment : Fragment() {
                 "Successfully added new post",
                 Snackbar.LENGTH_LONG
             ).show()
-
+            findNavController().navigate(com.example.doan3.R.id.action_addPostFragment_to_homeFragment)
         }
     }
 
