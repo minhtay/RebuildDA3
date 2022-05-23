@@ -1,6 +1,6 @@
 package com.example.doan3.data
 
-data class ReadUserData(
+data class ReadUser(
     val dateCreate: Long?=0,
     val dateUpdate: Long?=0,
     val userId: String? = null,
