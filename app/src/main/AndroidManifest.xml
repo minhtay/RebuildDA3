@@ -21,6 +21,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DoAn3">
         <activity
+            android:name=".view.acticity.SharePostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.acticity.CommentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.acticity.PostActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.acticity.SearchActivity"
             android:exported="false" />
         <activity

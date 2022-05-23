@@ -8,10 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.navigation.R
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.example.doan3.data.ReadUserData
+import com.example.doan3.data.ReadUser
 import com.example.doan3.data.UploadPost
 import com.example.doan3.databinding.FragmentAddPostBinding
 import com.google.android.material.snackbar.Snackbar
@@ -56,14 +55,14 @@ class AddPostFragment : Fragment() {
     }
 
     private fun LoadDatabaseUser() {
-        val profileList = ArrayList<ReadUserData>()
+        val profileList = ArrayList<ReadUser>()
         val fDatabase = FirebaseDatabase.getInstance().getReference("User")
         fDatabase.orderByChild("userId").equalTo(fAuth.currentUser!!.uid)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         for (uSnapshot in snapshot.children) {
-                            val data = uSnapshot.getValue(ReadUserData::class.java)
+                            val data = uSnapshot.getValue(ReadUser::class.java)
                             profileList.add(data!!)
                         }
                         Glide.with(requireActivity()).load(profileList[0].userAvatar)
@@ -108,7 +107,7 @@ class AddPostFragment : Fragment() {
     }
 
     private fun uploadData(id: String) {
-        val data = UploadPost(id,"Post",null, fAuth.currentUser!!.uid,binding.edtTitle.toString(),urlImage,ServerValue.TIMESTAMP,ServerValue.TIMESTAMP)
+        val data = UploadPost(id,"Post",null, fAuth.currentUser!!.uid,binding.edtTitle.text.toString(),urlImage,ServerValue.TIMESTAMP,ServerValue.TIMESTAMP)
         val fDatabase = FirebaseDatabase.getInstance().getReference("Post/$id")
         fDatabase.setValue(data).addOnSuccessListener {
             Log.d("uploadPost", "Upload post success")
