@@ -26,6 +26,13 @@ class SignupActivity : AppCompatActivity() {
         fAuth = FirebaseAuth.getInstance()
 
         binding.btnSignup.setOnClickListener { Signup() }
+        binding.btnLogin.setOnClickListener{Login()}
+    }
+
+    private fun Login() {
+        val intent = Intent(this,LoginActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun Signup() {
@@ -43,7 +50,7 @@ class SignupActivity : AppCompatActivity() {
         } else {
             binding.tilEmail.error = null
         }
-        if (binding.edtEmail.text.toString().matches(emailValidation.toRegex())) {
+        if (!binding.edtEmail.text.toString().matches(emailValidation.toRegex())) {
             binding.tilEmail.error = "Email invalid"
             return false
         } else {
@@ -92,7 +99,7 @@ class SignupActivity : AppCompatActivity() {
             val uName = email.substring(0, email.indexOf("@"))
             val uId = user.uid
             val uAvatar =
-                "https://firebasestorage.googleapis.com/v0/b/blog-93a0b.appspot.com/o/t%E1%BA%A3i%20xu%E1%BB%91ng.png?alt=media&token=55aaf24a-0285-40ee-8587-0f53a310f499"
+                "https://firebasestorage.googleapis.com/v0/b/doan3-24d93.appspot.com/o/avatar-default.png?alt=media&token=b8606c4c-ac02-48e7-a8b6-3bcc93bf098d"
             val data =
                 UpUserData(ServerValue.TIMESTAMP, ServerValue.TIMESTAMP, uId, uName, uAvatar, email)
             val ref = FirebaseDatabase.getInstance().getReference("User")

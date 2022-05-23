@@ -48,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
 
         // sét sự kiện click cho btn
         binding.btnLogin.setOnClickListener { loginToAccount() }
-        binding.btnFacebook.setOnClickListener { loginToFaceBook() }
+        loginToFaceBook()
         binding.btnGoogle.setOnClickListener { loginToGoogle() }
 
         // tắt bàn phím ảo bằng click vào màn hình
@@ -67,7 +67,7 @@ class LoginActivity : AppCompatActivity() {
         })
 
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("2848576765-6p5bsvqhtock33rv6kv8bstd97j90t9m.apps.googleusercontent.com")
+            .requestIdToken("2848576765-0vro2u0sluhfqpjgca348e9hfku1obot.apps.googleusercontent.com")
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
@@ -90,9 +90,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             } else Log.w(TAG, exception.toString())
         }
-/*
         callbackManager.onActivityResult(requestCode, resultCode, data)
-*/
 
     }
 
@@ -120,8 +118,7 @@ class LoginActivity : AppCompatActivity() {
                 user!!.uid,
                 user.displayName,
                 user.photoUrl.toString(),
-                user.email,
-                user.phoneNumber
+                user.email
             )
             val ref = FirebaseDatabase.getInstance().getReference("User")
             ref.addValueEventListener(object : ValueEventListener {
@@ -144,9 +141,10 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginToAccount() {
-        val email = binding.edtEmail.text.toString()
-        val pass = binding.edtPass.text.toString()
+
         if (checkValid()) {
+            val email = binding.edtEmail.text.toString()
+            val pass = binding.edtPass.text.toString()
             fAuth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this) {
                     if (it.isSuccessful) {
@@ -176,6 +174,9 @@ class LoginActivity : AppCompatActivity() {
         callbackManager = CallbackManager.Factory.create()
         binding.btnFacebook.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {
+                if (LoginManager.getInstance()== null){
+                    LoginManager.getInstance().logOut()
+                }else {
                 LoginManager.getInstance().logInWithReadPermissions(
                     this@LoginActivity, Arrays.asList("email", "public_profile")
                 )
@@ -193,7 +194,7 @@ class LoginActivity : AppCompatActivity() {
                             Log.d("facebooklogin","$error")
                         }
                     })
-            }
+            }}
         })
     }
 
@@ -233,7 +234,7 @@ class LoginActivity : AppCompatActivity() {
         } else {
             binding.tilEmail.error = null
         }
-        if (binding.edtEmail.text.toString().matches(emailValidation.toRegex())) {
+        if (!binding.edtEmail.text.toString().matches(emailValidation.toRegex())) {
             binding.tilEmail.error = "Email invalid"
             return false
         } else {

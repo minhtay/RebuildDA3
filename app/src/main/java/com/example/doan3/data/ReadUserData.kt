@@ -1,13 +1,10 @@
 package com.example.doan3.data
 
 data class ReadUserData(
-    val dateCreate: Long,
-    val dateUpdate: Long,
+    val dateCreate: Long?=0,
+    val dateUpdate: Long?=0,
     val userId: String? = null,
     val userName: String? = null,
     val userAvatar: String? = null,
-    val userEmail: String? = null,
-    val userPhoneNumber: String? = null,
-    val userBirthday: String? = null,
-    val userAddress: String? = null
+    val userEmail: String? = null
 )
