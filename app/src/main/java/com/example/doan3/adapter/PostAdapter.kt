@@ -336,7 +336,4 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
             Log.d("uploadPost", "Upload nofication success")
         }
     }
-
-    /*private fun DeleteNofication()*/
-
 }

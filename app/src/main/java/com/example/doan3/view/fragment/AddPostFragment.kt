@@ -89,7 +89,7 @@ class AddPostFragment : Fragment() {
     }
 
     private fun UploadImage(idPost: String) {
-        val fStorage = FirebaseStorage.getInstance().getReference("Post")
+        val fStorage = FirebaseStorage.getInstance().getReference("Post/$idPost")
         fStorage.putFile(filePath!!).addOnSuccessListener {
             fStorage.downloadUrl.addOnSuccessListener {
                 urlImage  = it.toString()

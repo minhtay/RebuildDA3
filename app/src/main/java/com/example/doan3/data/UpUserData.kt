@@ -6,5 +6,6 @@ data class UpUserData(
     val userId: String? = null,
     val userName: String? = null,
     val userAvatar: String? = null,
-    val userEmail: String? = null
+    val userEmail: String? = null,
+    val bio : String? = null
 )
