@@ -39,8 +39,6 @@ class ProfileActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener(object :View.OnClickListener{
             override fun onClick(p0: View?) {
-                val intent = Intent(this@ProfileActivity,MainActivity::class.java)
-                startActivity(intent)
                 finish()
 
             }

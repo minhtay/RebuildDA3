@@ -20,7 +20,9 @@
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_home.xml" value="0.37864583333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/fragment_notification.xml" value="0.37864583333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/item_comment.xml" value="0.3625" />
+        <entry key="..\:/Android/DoAn3/app/src/main/res/layout/item_nofication.xml" value="0.3625" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/item_post.xml" value="0.3625" />
+        <entry key="..\:/Android/DoAn3/app/src/main/res/layout/item_user.xml" value="0.3625" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/menu/bottom_nav.xml" value="0.37864583333333335" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/menu/menu_appbar.xml" value="0.3625" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/menu/menu_comment.xml" value="0.3625" />
@@ -28,7 +30,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

@@ -21,6 +21,7 @@ import com.example.doan3.data.ReadUser
 import com.example.doan3.data.UpNofication
 import com.example.doan3.data.UploadPost
 import com.example.doan3.databinding.ItemPostBinding
+import com.example.doan3.util.NoficationClass
 import com.example.doan3.view.acticity.CommentActivity
 import com.example.doan3.view.acticity.PostActivity
 import com.example.doan3.view.acticity.SharePostActivity
@@ -103,7 +104,7 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
                             } else {
                                 fDatabase.child(idPost).child(mAuth.currentUser!!.uid)
                                     .setValue(true)
-                                UpNofication("liked your post", idUser!!)
+                                Nofication("liked your post", idUser!!)
                                 like = false
                             }
                         }
@@ -122,6 +123,8 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
             override fun onClick(p0: View?) {
                 val intent = Intent(holder.binding.root.context, CommentActivity::class.java)
                 intent.putExtra("idPost", idPost)
+                intent.putExtra("idUser", idUser)
+
                 holder.binding.root.context.startActivity(intent)
             }
 
@@ -161,6 +164,7 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
                                 ServerValue.TIMESTAMP
                             )
                             ShareNow(holder, id, data)
+                            Nofication("shared your post", idUser!!)
 
                         } else {
                             var data = UploadPost(
@@ -328,12 +332,19 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
 
             })
     }
-    private fun UpNofication(mess:String, userId:String){
+
+    private fun Nofication(mess: String, userId: String) {
         val id = UUID.randomUUID().toString()
-        val data = UpNofication(mAuth.currentUser!!.uid,id,mess,false,ServerValue.TIMESTAMP,ServerValue.TIMESTAMP)
-        val fDatabase = FirebaseDatabase.getInstance().getReference("Notification/$userId/$id")
-        fDatabase.setValue(data).addOnSuccessListener {
-            Log.d("uploadPost", "Upload nofication success")
-        }
+        val data = UpNofication(
+            id,
+            userId,
+            mAuth.currentUser!!.uid,
+            mess,
+            false,
+            "Like",
+            ServerValue.TIMESTAMP,
+            ServerValue.TIMESTAMP
+        )
+        NoficationClass().UpNofication(data)
     }
 }

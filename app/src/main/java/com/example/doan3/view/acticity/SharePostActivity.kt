@@ -9,8 +9,10 @@ import com.bumptech.glide.Glide
 import com.example.doan3.R
 import com.example.doan3.data.ReadPost
 import com.example.doan3.data.ReadUser
+import com.example.doan3.data.UpNofication
 import com.example.doan3.data.UploadPost
 import com.example.doan3.databinding.ActivitySharePostBinding
+import com.example.doan3.util.NoficationClass
 import com.example.doan3.util.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -25,6 +27,7 @@ class SharePostActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySharePostBinding
     private lateinit var mAuth: FirebaseAuth
     private var idPost: String? = null
+    private var uID: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +60,7 @@ class SharePostActivity : AppCompatActivity() {
                             Glide.with(binding.root).load(postList[0].photo).into(binding.ivPhoto)
                             val dateCreate = postList[0].dateCreate!!
                             LoadDateCreate(dateCreate, binding.tvDateCreate)
+                            uID = postList[0].idUser
                             LoadUser(
                                 postList[0].idUser.toString(),
                                 binding.imvAvatar1,
@@ -94,6 +98,7 @@ class SharePostActivity : AppCompatActivity() {
                     Timer().schedule(timerTask {
                         finish()
                     },3000)
+                    Nofication()
                 }.addOnFailureListener{
                     Utils.hideSoftKeyboard(this@SharePostActivity,binding.root)
                     Snackbar.make(
@@ -144,6 +149,11 @@ class SharePostActivity : AppCompatActivity() {
     private fun LoadDateCreate(date: Long?, tvDateCreate: TextView) {
         val format = SimpleDateFormat("dd/MM/yyyy")
         tvDateCreate.text = format.format(date)
+    }
+    private fun Nofication() {
+        val id = UUID.randomUUID().toString()
+        val data = UpNofication(id,uID,mAuth.currentUser!!.uid,"shared your post",false,"Share",ServerValue.TIMESTAMP,ServerValue.TIMESTAMP)
+        NoficationClass().UpNofication(data)
     }
 
 }

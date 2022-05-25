@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="5dp"
+    android:id="@+id/layout">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      tools:ignore="MissingConstraints">
+      <de.hdodenhof.circleimageview.CircleImageView
+          android:id="@+id/imvAvatar"
+          android:layout_width="60dp"
+          android:layout_height="60dp"
+          android:layout_marginStart="10dp"
+          android:layout_marginTop="10dp"
+          android:layout_marginBottom="10dp"
+          app:civ_border_color="#FF000000"
+          app:civ_border_width="1dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          tools:ignore="MissingConstraints" />
+
+      <TextView
+          android:id="@+id/tvMess"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="15dp"
+          android:layout_marginTop="20dp"
+          android:text="mess"
+          app:layout_constraintStart_toEndOf="@+id/imvAvatar"
+          app:layout_constraintTop_toTopOf="parent"
+          tools:ignore="MissingConstraints" />
+
+      <TextView
+          android:id="@+id/tvDateCreate"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="15dp"
+          android:layout_marginTop="10dp"
+          android:text="12/10/2022"
+          android:textSize="12sp"
+          app:layout_constraintStart_toEndOf="@+id/imvAvatar"
+          app:layout_constraintTop_toBottomOf="@+id/tvMess"
+          tools:ignore="MissingConstraints" />
+
+      <View
+          android:id="@+id/view1"
+          android:layout_width="match_parent"
+          android:layout_height="2sp"
+          android:background="@color/black"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          tools:ignore="DuplicateIds,MissingConstraints" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

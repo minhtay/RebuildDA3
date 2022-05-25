@@ -10,7 +10,9 @@ import com.example.doan3.adapter.CommentAdapter
 import com.example.doan3.data.ReadCommennt
 import com.example.doan3.data.ReadUser
 import com.example.doan3.data.UpComment
+import com.example.doan3.data.UpNofication
 import com.example.doan3.databinding.ActivityCommentBinding
+import com.example.doan3.util.NoficationClass
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -22,6 +24,8 @@ class CommentActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCommentBinding
     private lateinit var mAuth: FirebaseAuth
     private var idPost: String? = null
+    private var uID: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +33,7 @@ class CommentActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         mAuth = FirebaseAuth.getInstance()
-
+        uID = intent.getStringExtra("idUser")
         binding.btnBack.setOnClickListener { finish() }
 
         val ref = FirebaseDatabase.getInstance().getReference("User")
@@ -77,6 +81,7 @@ class CommentActivity : AppCompatActivity() {
                         ).show()
                         com.example.doan3.util.Utils.hideSoftKeyboard(this@CommentActivity,binding.root)
                         binding.tvComment.text.clear()
+                        Nofication()
                     }.addOnFailureListener {
                         Snackbar.make(
                             binding.root,
@@ -118,6 +123,12 @@ class CommentActivity : AppCompatActivity() {
 
         })
 
+    }
+
+    private fun Nofication() {
+        val id = UUID.randomUUID().toString()
+        val data = UpNofication(id,uID,mAuth.currentUser!!.uid,"commented your post",false,"Comment",ServerValue.TIMESTAMP,ServerValue.TIMESTAMP)
+        NoficationClass().UpNofication(data)
     }
 
 

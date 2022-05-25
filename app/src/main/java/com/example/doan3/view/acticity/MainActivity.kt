@@ -36,7 +36,6 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this,ProfileActivity::class.java)
                     intent.putExtra("idUser", mAuth.currentUser!!.uid)
                     startActivity(intent)
-                    finish()
                 }
                 R.id.logout->{
                    buildDialog()!!.show()

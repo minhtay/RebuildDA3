@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="boder">#505050</color>
+    <color name="follow">#e18aaa</color>
+    <color name="status">#55b3d9</color>
+
 </resources>

@@ -18,6 +18,7 @@ import com.example.doan3.R
 import com.example.doan3.adapter.CommentAdapter
 import com.example.doan3.data.*
 import com.example.doan3.databinding.ActivityPostBinding
+import com.example.doan3.util.NoficationClass
 import com.example.doan3.util.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -35,6 +36,7 @@ class PostActivity : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
     private var filePath: Uri? = null
     private lateinit var postList: ArrayList<ReadPost>
+    private var uID :String?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +59,7 @@ class PostActivity : AppCompatActivity() {
                         for (uSnapshot in snapshot.children) {
                             val data = uSnapshot.getValue(ReadPost::class.java)
                             postList.add(data!!)
+                            uID = postList[0].idUser
                             LoadUser(postList[0].idUser, binding.imvAvatar, binding.tvName)
                             Glide.with(binding.root).load(postList[0].photo)
                                 .into(binding.imvPhoto)
@@ -171,6 +174,7 @@ class PostActivity : AppCompatActivity() {
                                 fDatabase.child(idPost).child(mAuth.currentUser!!.uid)
                                     .setValue(true)
                                 like = false
+                                Nofication("liked your post","Like")
                             }
                         }
                     }
@@ -184,8 +188,7 @@ class PostActivity : AppCompatActivity() {
 
         })
 
-        // xét sự kiện cho btn comment
-        binding.btnComment.setOnClickListener{Utils.hideSoftKeyboard(this,binding.root)}
+
 
         binding.btnShare.setOnClickListener {
             val popupMenu = PopupMenu(binding.root.context, binding.btnShare)
@@ -267,6 +270,7 @@ class PostActivity : AppCompatActivity() {
                             Snackbar.LENGTH_SHORT
                         ).show()
                         Utils.hideSoftKeyboard(this@PostActivity,binding.root)
+                        Nofication("commented your post","Comment")
                         binding.edtComment.text.clear()
                     }.addOnFailureListener {
                         Snackbar.make(
@@ -694,6 +698,7 @@ class PostActivity : AppCompatActivity() {
                 "Share post success",
                 Snackbar.LENGTH_SHORT
             ).show()
+            Nofication("shared your post","Share")
         }.addOnFailureListener {
             Log.e("Sharenow", "Share post failed")
         }
@@ -798,6 +803,11 @@ class PostActivity : AppCompatActivity() {
         fDatabase.child(idPost!!).removeValue().addOnSuccessListener {
             Log.d("DeleteDataLike", "success")
         }
+    }
+    private fun Nofication(mess:String,type:String) {
+        val id = UUID.randomUUID().toString()
+        val data = UpNofication(id,uID,mAuth.currentUser!!.uid,"commented your post",false,"Comment",ServerValue.TIMESTAMP,ServerValue.TIMESTAMP)
+        NoficationClass().UpNofication(data)
     }
 
 }
