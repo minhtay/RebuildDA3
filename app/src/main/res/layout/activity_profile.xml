@@ -125,6 +125,16 @@
                 android:textColor="@color/black"
                 app:strokeColor="@color/black"
                 app:strokeWidth="2dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFollow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="@android:color/transparent"
+                android:text="Follow"
+                android:textColor="@color/black"
+                app:strokeColor="@color/black"
+                app:strokeWidth="2dp" />
         </LinearLayout>
 
         <TextView

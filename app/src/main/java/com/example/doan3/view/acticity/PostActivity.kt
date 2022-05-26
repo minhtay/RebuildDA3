@@ -36,7 +36,7 @@ class PostActivity : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
     private var filePath: Uri? = null
     private lateinit var postList: ArrayList<ReadPost>
-    private var uID :String?=null
+    private var uID: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +67,9 @@ class PostActivity : AppCompatActivity() {
                                 binding.edtTitle.visibility = View.GONE
                             } else {
                                 binding.edtTitle.setText(postList[0].title)
+                            }
+                            if (mAuth.currentUser!!.uid != postList[0].idUser) {
+                                binding.btnMenu.visibility = View.GONE
                             }
 
                             if (postList[0].typePost == "Post") {
@@ -174,7 +177,7 @@ class PostActivity : AppCompatActivity() {
                                 fDatabase.child(idPost).child(mAuth.currentUser!!.uid)
                                     .setValue(true)
                                 like = false
-                                Nofication("liked your post","Like")
+                                Nofication("liked your post", "Like")
                             }
                         }
                     }
@@ -269,8 +272,8 @@ class PostActivity : AppCompatActivity() {
                             "Add new comment uccess",
                             Snackbar.LENGTH_SHORT
                         ).show()
-                        Utils.hideSoftKeyboard(this@PostActivity,binding.root)
-                        Nofication("commented your post","Comment")
+                        Utils.hideSoftKeyboard(this@PostActivity, binding.root)
+                        Nofication("commented your post", "Comment")
                         binding.edtComment.text.clear()
                     }.addOnFailureListener {
                         Snackbar.make(
@@ -288,18 +291,22 @@ class PostActivity : AppCompatActivity() {
         })
 
 
-        binding.cardView1.setOnClickListener { Utils.hideSoftKeyboard(this@PostActivity,binding.root) }
+        binding.cardView1.setOnClickListener {
+            Utils.hideSoftKeyboard(
+                this@PostActivity,
+                binding.root
+            )
+        }
+
 
         binding.btnMenu.setOnClickListener(object : View.OnClickListener {
             @SuppressLint("NewApi")
             override fun onClick(v: View?) {
-                binding.btnMenu.isEnabled = false
                 val popupMenu = PopupMenu(binding.root.context, binding.btnMenu)
                 popupMenu.setOnMenuItemClickListener {
                     when (it.itemId) {
                         R.id.delete -> {
                             if (mAuth.currentUser!!.uid == postList[0].idUser) {
-                                /**/
                                 buildDialog(idPost)!!.show()
 
 
@@ -314,6 +321,7 @@ class PostActivity : AppCompatActivity() {
                         }
                         R.id.edit -> {
                             binding.edtTitle.requestFocus()
+                            binding.btnMenu.isEnabled = false
                             if (mAuth.currentUser!!.uid == postList[0].idUser) {
                                 binding.tvNumberLayout.visibility = View.GONE
                                 binding.linearLayout3.visibility = View.GONE
@@ -357,25 +365,11 @@ class PostActivity : AppCompatActivity() {
 
         binding.btnCancel.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                binding.btnMenu.isEnabled = true
-                binding.tvNumberLayout.visibility = View.VISIBLE
-                binding.linearLayout3.visibility = View.VISIBLE
-                binding.linearLayout4.visibility = View.VISIBLE
-                binding.view.visibility = View.VISIBLE
-                binding.view1.visibility = View.VISIBLE
-                binding.linearLayout5.visibility = View.VISIBLE
-                binding.layout12.visibility = View.GONE
-                binding.edtTitle.setHint("")
                 binding.edtTitle.setText(postList[0].title)
-                Glide.with(this@PostActivity).load(postList[0].photo).into(binding.imvPhoto)
-                binding.btnClearImage.visibility = View.GONE
-                binding.btnPickimage.visibility = View.GONE
-                binding.edtTitle.isEnabled = false
-                filePath = null
+                reloadUi()
             }
 
         })
-
         binding.btnPickimage.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 TedImagePicker.with(this@PostActivity).start { uri ->
@@ -399,270 +393,107 @@ class PostActivity : AppCompatActivity() {
             }
 
         })
-
+        binding.layout.setOnClickListener { Utils.hideSoftKeyboard(this, binding.root) }
         binding.btnUpdate.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                val nTitle = binding.edtTitle.text.toString()
-                if (postList[0].typePost == "Post") {
-                    if (nTitle != postList[0].title) {//title mới khác với title cũ
-                        if (nTitle.length > 0) {// title mới khác null
-                            if (postList[0].photo != null) {//photo khác null
-                                if (filePath != null) {
-                                    // thêm ảnh + title, xóa ảnh
-                                    Log.d("testEditPost", "thêm ảnh + title, xóa ảnh 1")
-                                    UpadteTitle(idPost, nTitle, 2)
+            override fun onClick(p0: View?) {
+                if (CheckValidUpadte()){
+                    if (filePath != null) {
+                        val text = binding.edtTitle.text.toString()
+                        val data = UploadPost(
+                            idPost,
+                            postList[0].typePost,
+                            postList[0].idShare,
+                            postList[0].idUser,
+                            text,
+                            postList[0].photo,
+                            ServerValue.TIMESTAMP,
+                            ServerValue.TIMESTAMP
+                        )
+                        UpdatePost(idPost, data)
+                        binding.edtTitle.setText(text)
 
-                                } else {
-                                    if (binding.imvPhoto.drawable != null) {
-                                        // thêm title
-                                        Log.d("testEditPost", "thêm title 2 ")
-                                        UpadteTitle(idPost, nTitle, 0)
-                                    } else {
-                                        //thêm title,xóa ảnh
-                                        Log.d("testEditPost", "thêm title,xóa ảnh 3 ")
-                                        UpadteTitle(idPost, nTitle, 1)
-                                    }
-                                }
-                            } else {// photo == null
-                                if (filePath != null) {
-                                    // thêm ảnh + title
-                                    Log.d("testEditPost", "thêm ảnh + title 4")
-                                    UpadteTitle(idPost, nTitle, 3)
-                                } else {
-                                    // thêm title
-                                    Log.d("testEditPost", "thêm title 5")
-                                    UpadteTitle(idPost, nTitle, 0)
-
-
-                                }
-                            }
-
-                        } else {
-                            if (postList[0].photo != null) {//photo khác null
-                                if (filePath != null) {
-                                    // thêm ảnh + title(title = null), xóa ảnh
-                                    Log.d(
-                                        "testEditPost",
-                                        "thêm ảnh + title(title = null), xóa ảnh 6"
-                                    )
-                                    UpadteTitle(idPost, nTitle, 2)
-
-                                } else {
-                                    if (binding.imvPhoto.drawable != null) {
-                                        // thêm title(title = null)
-                                        Log.d("testEditPost", "thêm title(title = null) 7")
-                                        UpadteTitle(idPost, nTitle, 0)
-
-                                    } else {
-                                        //lỗi
-                                        Log.d("testEditPost", "lỗi 8")
-                                    }
-                                }
-                            } else {// photo == null
-                                if (filePath != null) {
-                                    // thêm ảnh + title
-                                    Log.d("testEditPost", "thêm ảnh + title 9")
-                                    UpadteTitle(idPost, nTitle, 3)
-
-                                } else {
-                                    // lỗi
-                                    Log.d("testEditPost", "lỗi 10")
-                                }
-                            }
-                        }
-                    } else { // title mới giống title cũ
-                        if (nTitle.length > 0) {
-                            if (postList[0].photo != null) {
-                                if (filePath != null) {
-                                    //xóa ảnh+thêm ảnh
-                                    Log.d("testEditPost", "xóa ảnh+thêm ảnh")
-                                    DeleTeImage(idPost, nTitle, 1)
-                                } else {
-                                    //xóa ảnh
-                                    Log.d("testEditPost", "xóa ảnh")
-                                    DeleTeImage(idPost, nTitle, 0)
-                                }
-                            } else {
-                                if (filePath != null) {
-                                    //thêm ảnh
-                                    Log.d("testEditPost", "thêm ảnh")
-                                    UpdateImage(idPost, nTitle)
-                                } else {
-                                    //lỗi
-                                    Log.d("testEditPost", "lỗi")
-                                }
-                            }
-                        } else {
-                            //lỗi
-                            Log.d("testEditPost", "lỗi")
-                        }
-                    }
-
-                } else {
-                    if (nTitle == postList[0].title) {
-                        Snackbar.make(
-                            binding.root,
-                            "You haven't changed at all",
-                            Snackbar.LENGTH_LONG
-                        ).show()
                     } else {
-                        val ref = FirebaseDatabase.getInstance().getReference("Post")
-                        ref.child(idPost).child("title").setValue(nTitle)
-                            .addOnSuccessListener {
-                                Snackbar.make(
-                                    binding.root,
-                                    "Post update successfully",
-                                    Snackbar.LENGTH_LONG
-                                ).show()
-                                binding.tvNumberLayout.visibility = View.VISIBLE
-                                binding.linearLayout3.visibility = View.VISIBLE
-                                binding.linearLayout4.visibility = View.VISIBLE
-                                binding.view.visibility = View.VISIBLE
-                                binding.view1.visibility = View.VISIBLE
-                                binding.linearLayout5.visibility = View.VISIBLE
-                                binding.layout12.visibility = View.GONE
-                                binding.btnClearImage.visibility = View.GONE
-                                binding.edtTitle.isEnabled = false
-                                binding.edtTitle.setText(nTitle)
-                            }
+                        deleteImage(idPost)
                     }
-                }
-            }
-
+            }}
         })
 
-        binding.layout.setOnClickListener {Utils.hideSoftKeyboard(this,binding.root) }
 
     }
 
-    private fun UpadteTitle(idPost: String, nTitle: String, i: Int) {
-        val ref = FirebaseDatabase.getInstance().getReference("Post")
-        ref.child(idPost).child("title").setValue(binding.edtTitle.text.toString())
-            .addOnSuccessListener {
-                if (i == 0) {
-                    Log.d("testEditPost1", "thêm title ")
-                    Snackbar.make(binding.root, "Post update successfully", Snackbar.LENGTH_LONG)
-                        .show()
-                    binding.tvNumberLayout.visibility = View.VISIBLE
-                    binding.linearLayout3.visibility = View.VISIBLE
-                    binding.linearLayout4.visibility = View.VISIBLE
-                    binding.view.visibility = View.VISIBLE
-                    binding.view1.visibility = View.VISIBLE
-                    binding.linearLayout5.visibility = View.VISIBLE
-                    binding.layout12.visibility = View.GONE
-                    binding.btnClearImage.visibility = View.GONE
-                    binding.edtTitle.isEnabled = false
-                    binding.edtTitle.setText(nTitle)
-                    binding.btnMenu.isEnabled = true
-                    binding.btnPickimage.visibility = View.GONE
-                    binding.btnClearImage.visibility = View.GONE
+    private fun CheckValidUpadte(): Boolean {
+        if (binding.edtTitle.text.isEmpty()) {
+            Snackbar.make(
+                binding.root,
+                "TitLe not entered",
+                Snackbar.LENGTH_SHORT
+            ).show()
+            return false
+        }
+        if (binding.imvPhoto.drawable == null){
+            Snackbar.make(
+                binding.root,
+                "The post's photo has not been selected",
+                Snackbar.LENGTH_SHORT
+            ).show()
+            return false
+        }
 
-
-                }
-
-                if (i == 1) {
-                    Log.d("testEditPost1", "thêm title + xóa ảnh")
-                    DeleTeImage(idPost, nTitle, 0)
-
-                }
-
-                if (i == 2) {
-                    Log.d("testEditPost1", "thêm title+ xóa ảnh + thêm ảnh")
-                    DeleTeImage(idPost, nTitle, 1)
-
-                }
-
-                if (i == 3) {
-                    Log.d("testEditPost1", "thêm title + thêm ảnh")
-                    UpdateImage(idPost, nTitle)
-
-                }
-            }
+        return true
     }
 
-    private fun DeleTeImage(idPost: String, nTitle: String, i: Int) {
+    private fun deleteImage(idPost: String) {
         val fStorage = FirebaseStorage.getInstance().getReference("Post")
         fStorage.child(idPost).delete().addOnSuccessListener {
-            if (i == 0) {
-                val ref = FirebaseDatabase.getInstance().getReference("Post")
-                ref.child(idPost).child("photo").setValue(null)
-                    .addOnSuccessListener {
-                        Log.d("testEditPost2", "xóa ảnh")
-                        binding.tvNumberLayout.visibility = View.VISIBLE
-                        binding.linearLayout3.visibility = View.VISIBLE
-                        binding.linearLayout4.visibility = View.VISIBLE
-                        binding.view.visibility = View.VISIBLE
-                        binding.view1.visibility = View.VISIBLE
-                        binding.linearLayout5.visibility = View.VISIBLE
-                        binding.layout12.visibility = View.GONE
-                        binding.btnClearImage.visibility = View.GONE
-                        binding.edtTitle.isEnabled = false
-                        binding.edtTitle.setText(nTitle)
-                        binding.btnMenu.isEnabled = true
-                        binding.btnPickimage.visibility = View.GONE
-                        binding.imvPhoto.setImageResource(0)
-                        binding.btnClearImage.visibility = View.GONE
-                        postList[0].photo = null
-                    }.addOnFailureListener {
-                        Log.d("error firestorage", it.toString())
-                    }
-            }
-
-            if (i == 1) {
-                Log.d("testEditPost2", "xóa ảnh + thêm ảnh")
-                UpdateImage(idPost, nTitle)
-
-            }
-        }.addOnFailureListener {
-            Log.d("error firestorage", it.toString())
+            UploadImage(idPost)
         }
+    }
+
+    private fun UploadImage(idPost: String) {
+        val text = binding.edtTitle.text.toString()
+
+        val fStorage = FirebaseStorage.getInstance().getReference("Post/$idPost")
+        fStorage.putFile(filePath!!).addOnSuccessListener {
+            fStorage.downloadUrl.addOnSuccessListener {
+                val url = it.toString()
+                val data = UploadPost(
+                    idPost,
+                    postList[0].typePost,
+                    postList[0].idShare,
+                    postList[0].idUser,
+                    text,
+                    url,
+                    ServerValue.TIMESTAMP,
+                    ServerValue.TIMESTAMP
+                )
+                UpdatePost(idPost, data)
+                binding.edtTitle.setText(text)
+                reloadUi()
+            }
+        }
+    }
+
+    private fun UpdatePost(idPost: String, text: UploadPost) {
+        val fDatabase = FirebaseDatabase.getInstance().getReference("Post")
+        fDatabase.child(idPost).setValue(text)
 
     }
 
-    private fun UpdateImage(idPost: String, nTitle: String) {
-        binding.imvPhoto.setImageResource(0)
-        val fStorage = FirebaseStorage.getInstance().getReference("Post/$idPost")
-        fStorage.putFile(filePath!!).addOnSuccessListener {
-            Log.e("uploadImage", "success")
-            fStorage.downloadUrl.addOnSuccessListener {
-                val url = it.toString()
-                Log.e("dowloadImage", "success")
-
-                val ref = FirebaseDatabase.getInstance().getReference("Post")
-                ref.child(idPost).child("photo").setValue(url)
-                    .addOnSuccessListener {
-                        Snackbar.make(
-                            binding.root,
-                            "Post update successfully",
-                            Snackbar.LENGTH_LONG
-                        )
-                            .show()
-                        binding.tvNumberLayout.visibility = View.VISIBLE
-                        binding.linearLayout3.visibility = View.VISIBLE
-                        binding.linearLayout4.visibility = View.VISIBLE
-                        binding.view.visibility = View.VISIBLE
-                        binding.view1.visibility = View.VISIBLE
-                        binding.linearLayout5.visibility = View.VISIBLE
-                        binding.layout12.visibility = View.GONE
-                        binding.btnClearImage.visibility = View.GONE
-                        binding.edtTitle.isEnabled = false
-                        binding.edtTitle.setText(nTitle)
-                        Glide.with(binding.root).load(filePath).into(binding.imvPhoto)
-                        binding.btnMenu.isEnabled = true
-                        binding.btnPickimage.visibility = View.GONE
-                        binding.btnClearImage.visibility = View.GONE
-                        Glide.with(binding.root).load(filePath).into(binding.imvPhoto)
-                        postList[0].photo = url
-                    }.addOnFailureListener {
-                        Log.d("error firestorage", it.toString())
-                    }
-                Log.d("testEditPost3", "thêm ảnh")
-
-            }
-        }.addOnFailureListener {
-            Log.d("error firestorage", it.toString())
-        }
-
+    private fun reloadUi() {
+        binding.btnMenu.isEnabled = true
+        binding.tvNumberLayout.visibility = View.VISIBLE
+        binding.linearLayout3.visibility = View.VISIBLE
+        binding.linearLayout4.visibility = View.VISIBLE
+        binding.view.visibility = View.VISIBLE
+        binding.view1.visibility = View.VISIBLE
+        binding.linearLayout5.visibility = View.VISIBLE
+        binding.layout12.visibility = View.GONE
+        binding.edtTitle.setHint("")
+        Glide.with(this@PostActivity).load(postList[0].photo).into(binding.imvPhoto)
+        binding.btnClearImage.visibility = View.GONE
+        binding.btnPickimage.visibility = View.GONE
+        binding.edtTitle.isEnabled = false
+        filePath = null
     }
 
     private fun LoadUser(idUser: String?, imvAvatar: CircleImageView, tvName: TextView) {
@@ -698,7 +529,7 @@ class PostActivity : AppCompatActivity() {
                 "Share post success",
                 Snackbar.LENGTH_SHORT
             ).show()
-            Nofication("shared your post","Share")
+            Nofication("shared your post", "Share")
         }.addOnFailureListener {
             Log.e("Sharenow", "Share post failed")
         }
@@ -755,7 +586,6 @@ class PostActivity : AppCompatActivity() {
     }
 
 
-
     private fun buildDialog(
         idPost: String?
     ): AlertDialog.Builder? {
@@ -768,7 +598,7 @@ class PostActivity : AppCompatActivity() {
             dFirebaseDatabase.child(idPost!!).removeValue().addOnSuccessListener {
                 DeleteDataComment(idPost)
                 DeleteDataLike(idPost)
-                DeleTeDataImage(idPost)
+                DeleteShare(idPost)
                 Snackbar.make(
                     binding.root,
                     "Post deleted",
@@ -784,12 +614,33 @@ class PostActivity : AppCompatActivity() {
         return builder
     }
 
-    private fun DeleTeDataImage(idPost: String) {
-        val fStorage = FirebaseStorage.getInstance().getReference("Post")
-        fStorage.child(idPost).delete().addOnSuccessListener {
-            Log.d("DeleteDataImage", "success")
-        }
+    private fun DeleteShare(idPost: String) {
+        val fDatabase = FirebaseDatabase.getInstance().getReference("Post")
+        fDatabase.orderByChild("idShare").equalTo(idPost)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (u in snapshot.children) {
+                            val data = u.getValue(ReadPost::class.java)
+                            val id = data!!.idPost
+                            deleteShare(id!!)
+                        }
+
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
     }
+
+    private fun deleteShare(id: String) {
+        val fDatabase = FirebaseDatabase.getInstance().getReference("Post")
+        fDatabase.child(id).removeValue()
+    }
+
 
     private fun DeleteDataLike(idPost: String) {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Like")
@@ -804,9 +655,19 @@ class PostActivity : AppCompatActivity() {
             Log.d("DeleteDataLike", "success")
         }
     }
-    private fun Nofication(mess:String,type:String) {
+
+    private fun Nofication(mess: String, type: String) {
         val id = UUID.randomUUID().toString()
-        val data = UpNofication(id,uID,mAuth.currentUser!!.uid,"commented your post",false,"Comment",ServerValue.TIMESTAMP,ServerValue.TIMESTAMP)
+        val data = UpNofication(
+            id,
+            uID,
+            mAuth.currentUser!!.uid,
+            "commented your post",
+            false,
+            "Comment",
+            ServerValue.TIMESTAMP,
+            ServerValue.TIMESTAMP
+        )
         NoficationClass().UpNofication(data)
     }
 
