@@ -70,6 +70,7 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
         val photo = postList[position].photo
         val dateCreate = postList[position].dateCreate
         val dateUpdate = postList[position].dateUpdate
+        Log.d("testDate", dateCreate.toString())
 
         LoadUser(holder.binding.root, idUser, holder.binding.imvAvatar, holder.binding.tvName)
 
@@ -86,6 +87,13 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
             override fun onClick(v: View?) {
                 val intent = Intent(holder.binding.root.context, PostActivity::class.java)
                 intent.putExtra("idPost", idPost)
+                intent.putExtra("typePost", typePost)
+                intent.putExtra("idShare", idShare)
+                intent.putExtra("idUser", idUser)
+                intent.putExtra("title", title)
+                intent.putExtra("photo", photo)
+                intent.putExtra("dateCreate", dateCreate.toString())
+                intent.putExtra("dateUpdate", dateUpdate.toString())
                 holder.binding.root.context.startActivity(intent)
             }
         })
