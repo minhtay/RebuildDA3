@@ -26,6 +26,7 @@ import kotlin.collections.ArrayList
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private val userList = ArrayList<ReadUser>()
+    private val postList = ArrayList<ReadPost>()
     private lateinit var fAuth: FirebaseAuth
     private var filePath: Uri? = null
 
@@ -164,20 +165,19 @@ class HomeFragment : Fragment() {
     }
 
     private fun getDataPost() {
-        val postList = ArrayList<ReadPost>()
         FirebaseDatabase.getInstance().getReference("Post").orderByChild("dateCreate")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
+                        postList.clear()
                         for (uSnapshot in snapshot.children) {
                             val data = uSnapshot.getValue(ReadPost::class.java)
                             postList.add(data!!)
                         }
+
                     }
                     binding.rcvHome.adapter = PostAdapter(requireActivity(), postList)
-
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                     Log.e("DataPost", error.message)
                 }

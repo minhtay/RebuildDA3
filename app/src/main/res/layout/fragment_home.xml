@@ -161,7 +161,8 @@
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imgAddPhoto"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_gravity="center"/>
                     </LinearLayout>
 
 
@@ -200,7 +201,8 @@
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imgLiveStream"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_gravity="center"/>
 
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>

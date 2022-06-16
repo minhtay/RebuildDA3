@@ -216,7 +216,6 @@ class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadComm
                 override fun onCancelled(error: DatabaseError) {
                     Log.d("DatabaseError", error.message)
                 }
-
             })
         }
         builder.setNeutralButton("Cancel"){ dialog, which ->}

@@ -1,6 +1,5 @@
 package com.example.doan3.view.acticity
 
-import android.R
 import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
@@ -8,12 +7,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity.END
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.doan3.R
 import com.example.doan3.adapter.CommentAdapter
 import com.example.doan3.data.*
 import com.example.doan3.databinding.ActivityPostBinding
@@ -24,7 +25,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.ortiz.touchview.TouchImageView
-import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import gun0912.tedimagepicker.builder.TedImagePicker
 import java.text.SimpleDateFormat
@@ -59,13 +59,18 @@ class PostActivity : AppCompatActivity() {
 
         uID = idUser
 
+        if (typePost == "Share") {
+            binding.edtTitle.visibility = View.GONE
+            binding.imvPhoto.visibility = View.GONE
+        }
+
         binding.edtTitle.setText(title)
         if (photo != null) {
             binding.imvPhoto.visibility = View.VISIBLE
         }
         loadUser(idUser, binding.imvAvatar, binding.tvName)
         loadDateCreate(dateCreate, binding.tvDateCreate)
-        Log.d("url Photo",photo.toString())
+        Log.d("url Photo", photo.toString())
         if (typePost == "Post") {
             binding.layoutShare.visibility = View.GONE
             Glide.with(binding.root).load(photo).into(binding.imvPhoto)
@@ -280,7 +285,7 @@ class PostActivity : AppCompatActivity() {
                     com.example.doan3.R.id.edit -> {
                         Log.d("edit Post", typePost.toString())
 
-                        if (typePost.toString() == "Post"){
+                        if (typePost.toString() == "Post") {
                             Log.d("edit Post", typePost.toString())
                             binding.edtTitle.isEnabled = true
                             binding.edtTitle.hint = "What are you thinking ?"
@@ -331,14 +336,27 @@ class PostActivity : AppCompatActivity() {
         }
 
         binding.imvPhoto.setOnClickListener {
-            val builder = Dialog(this@PostActivity,android.R.style.Theme_Material_NoActionBar_Fullscreen)
-            builder.setContentView(com.example.doan3.R.layout.custom_image_view)
+            val builder =
+                Dialog(this@PostActivity, android.R.style.Theme_Material_NoActionBar_Fullscreen)
+            builder.setContentView(com.example.doan3.R.layout.dialog_image_view)
             val image = builder.findViewById<TouchImageView>(com.example.doan3.R.id.imageView)
-            val url : String = photo.toString()
-            Glide.with(this).load(photo.toString()).into(builder.findViewById(com.example.doan3.R.id.imageView))
+            val url: String = photo.toString()
+            Glide.with(this).load(photo.toString())
+                .into(builder.findViewById(com.example.doan3.R.id.imageView))
             builder.setCancelable(true)
             builder.setCanceledOnTouchOutside(false)
             builder.show()
+        }
+
+        binding.btnComment.setOnClickListener {
+            val inputMethodManager: InputMethodManager =
+                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.toggleSoftInputFromWindow(
+                binding.edtComment.getApplicationWindowToken(),
+                InputMethodManager.SHOW_FORCED,
+                0
+            )
+            binding.edtComment.requestFocus()
         }
 
     }
@@ -478,18 +496,18 @@ class PostActivity : AppCompatActivity() {
 
     private fun loadLikeNumber(idPost: String?) {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Like")
-        fDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+        fDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.child(idPost!!).hasChild(mAuth.currentUser!!.uid)) {
                     (snapshot.child(idPost).childrenCount.toString() + " Like").also {
                         binding.tvLikeNumber.text = it
                     }
-                    binding.imgLike.setImageResource(com.example.doan3.R.drawable.ic_like_red)
+                    binding.imgLike.setImageResource(R.drawable.ic_like_red)
                 } else {
                     (snapshot.child(idPost).childrenCount.toString() + " Like").also {
                         binding.tvLikeNumber.text = it
                     }
-                    binding.imgLike.setImageResource(com.example.doan3.R.drawable.ic_like)
+                    binding.imgLike.setImageResource(R.drawable.ic_like)
                 }
             }
 

@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.view.Gravity.BOTTOM
 import android.view.Gravity.END
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +27,6 @@ import com.example.doan3.util.NoficationClass
 import com.example.doan3.view.acticity.CommentActivity
 import com.example.doan3.view.acticity.PostActivity
 import com.example.doan3.view.acticity.SharePostActivity
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import de.hdodenhof.circleimageview.CircleImageView
@@ -40,7 +40,6 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
     RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     private lateinit var mAuth: FirebaseAuth
-    private var idPost: String? = null
 
 
     class ViewHolder(val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root)
@@ -112,9 +111,9 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
             fDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.child(idPost!!).hasChild(mAuth.currentUser?.uid!!)) {
-                        fDatabase.child(idPost).child(mAuth.currentUser!!.uid).removeValue()
+                        fDatabase.child(idPost!!).child(mAuth.currentUser!!.uid).removeValue()
                     } else {
-                        fDatabase.child(idPost).child(mAuth.currentUser!!.uid)
+                        fDatabase.child(idPost!!).child(mAuth.currentUser!!.uid)
                             .setValue(true)
                         uploadNofication("liked your post", idUser!!)
                     }
@@ -156,7 +155,7 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.shareNow -> {
-                        Log.d("Resut","share start")
+                        Log.d("Resut", "share start")
                         val id = UUID.randomUUID().toString()
                         if (typePost == "Post") {
                             UploadPost(
@@ -209,27 +208,24 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
 
 
         holder.binding.btnMenu.setOnClickListener {
-            val popupMenu = PopupMenu(holder.binding.btnMenu.context, holder.binding.root)
+            val popupMenu = PopupMenu(holder.binding.root.context, holder.binding.btnMenu)
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.delete -> {
-                        if (idUser != mAuth.currentUser!!.uid){
-                            if (typePost == "Post") {
-
-                            } else {
-                                buildDialog(holder.binding.root)?.show()
-                            }
-                        }else{
-
-                        }
+                        buildDialog(holder.binding.root, idPost, typePost)?.show()
                     }
+
                     R.id.favorite -> {}
                     R.id.save_post -> {}
                 }
                 false
             }
-            popupMenu.inflate(R.menu.menu_item_post)
-            END.also { popupMenu.gravity = it }
+            if (idUser == mAuth.currentUser!!.uid) {
+                popupMenu.inflate(R.menu.menu_item_post)
+            } else {
+                popupMenu.inflate(R.menu.menu_item_post1)
+            }
+            BOTTOM.also { popupMenu.gravity = it }
             popupMenu.setForceShowIcon(true)
             popupMenu.show()
         }
@@ -268,7 +264,7 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
     private fun shareNow(holder: ConstraintLayout, id: String, data: UploadPost) {
         val ref = FirebaseDatabase.getInstance().getReference("Post")
         ref.child(id).setValue(data).addOnSuccessListener {
-            Log.d("Resut","share resuft")
+            Log.d("Resut", "share resuft")
             dialogSuccess()
         }.addOnFailureListener {
             Log.e("Sharenow", "Share post failed")
@@ -279,12 +275,12 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
     private fun dialogSuccess() {
         val diaolog = Dialog(activity)
         diaolog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        diaolog.setContentView(R.layout.custom_success_dialog)
+        diaolog.setContentView(R.layout.dialog_success)
         diaolog.setCancelable(true)
         val view = diaolog.findViewById<ConstraintLayout>(R.id.layoutDialog)
         view.setOnClickListener { diaolog.dismiss() }
         diaolog.show()
-        Log.d("Resut","share finish")
+        Log.d("Resut", "share finish")
     }
 
     private fun loadPostShare(holder: ViewHolder, idShare: String?) {
@@ -394,21 +390,100 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
         NoficationClass().UpNofication(data)
     }
 
-    private fun buildDialog(context: ConstraintLayout): AlertDialog.Builder? {
+    private fun buildDialog(context: ConstraintLayout, idPost: String?, typePost: String?): AlertDialog.Builder? {
         val builder = AlertDialog.Builder(context.context)
         builder.setTitle("Delete post ")
-        builder.setMessage("Are you sure you want to delete the post?")//Bạn có chắc chắn, bạn có muốn đăng xuất không?
+        builder.setMessage("Are you sure you want to delete the post?")
         builder.setPositiveButton("Delete") { dialog, which ->
-            deletePost(context)
+            if (typePost=="Post"){
+                deletePost(idPost)
+            }else deletePostShare(idPost)
         }
         builder.setNeutralButton("Cancel") { dialog, which -> }
         return builder
     }
 
-    private fun deletePost(context: ConstraintLayout) {
-        FirebaseDatabase.getInstance().getReference("Post/$idPost").removeValue()
-            .addOnSuccessListener {
-                Snackbar.make(context, "Delete post success", Snackbar.LENGTH_SHORT).show()
+    private fun deletePost(idPost: String?) {
+        val fdata = FirebaseDatabase.getInstance().getReference("Post")
+        fdata.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.hasChild(idPost!!)) {
+                    Log.d("Delete post", "post")
+                    fdata.child(idPost).removeValue().addOnSuccessListener {
+                        deleteComment(idPost)
+                        deleteLike(idPost)
+                        deleteSharePost(idPost)
+                        dialogSuccess()
+                    }
+                }
             }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("Delete post", error.toString())
+            }
+
+        })
+    }
+
+    private fun deleteSharePost (idPost: String) {
+        val fDatabase = FirebaseDatabase.getInstance().getReference("Post")
+        fDatabase.orderByChild("idShare").equalTo(idPost)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (u in snapshot.children) {
+                            val data = u.getValue(ReadPost::class.java)
+                            val id = data!!.idPost
+                            deleteShare(id!!)
+                        }
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("Delete post", error.toString())
+                }
+            })
+    }
+
+    private fun deleteShare(id: String) {
+        val fDatabase = FirebaseDatabase.getInstance().getReference("Post")
+        fDatabase.child(id).removeValue().addOnSuccessListener {
+            deleteComment(id)
+            deleteLike(id)
+        }
+    }
+
+    private fun deletePostShare(idPost: String?) {
+        val fdata = FirebaseDatabase.getInstance().getReference("Post")
+        fdata.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.hasChild(idPost!!)) {
+                    Log.d("Delete post", "post")
+                    fdata.child(idPost).removeValue().addOnSuccessListener {
+                        deleteComment(idPost)
+                        deleteLike(idPost)
+                        dialogSuccess()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("Delete post", error.toString())
+            }
+
+        })
+    }
+
+    private fun deleteLike(idPost: String) {
+        val fDatabase = FirebaseDatabase.getInstance().getReference("Like")
+        fDatabase.child(idPost!!).removeValue().addOnSuccessListener {
+            Log.d("delete like", "success")
+        }
+    }
+
+    private fun deleteComment(idPost: String) {
+        val fDatabase = FirebaseDatabase.getInstance().getReference("Comment")
+        fDatabase.child(idPost!!).removeValue().addOnSuccessListener {
+            Log.d("delete comment", "success")
+        }
     }
 }

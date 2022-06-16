@@ -2,14 +2,11 @@ package com.example.doan3.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.doan3.R
 import com.example.doan3.data.ReadUser
 import com.example.doan3.databinding.ItemUserBinding
 import com.example.doan3.view.acticity.ProfileActivity
@@ -47,9 +44,9 @@ class SearchAdapter(val activity: Context, val searchList: ArrayList<ReadUser>) 
         val idUser = searchList[position].userId
 
         Glide.with(holder.binding.root.context).load(avatar).into(holder.binding.imvAvatar)
-        holder.binding.tvname.text = name
+        holder.binding.tvUserName.text = name
 
-        holder.binding.itemClick.setOnClickListener(object :View.OnClickListener{
+        holder.binding.view.setOnClickListener(object :View.OnClickListener{
             override fun onClick(p0: View?) {
                 val intent = Intent(activity,ProfileActivity::class.java)
                 intent.putExtra("idUser",idUser)
@@ -59,23 +56,25 @@ class SearchAdapter(val activity: Context, val searchList: ArrayList<ReadUser>) 
 
         })
         mAth = FirebaseAuth.getInstance()
-        holder.binding.btnFollow.setOnClickListener{Follow(idUser)}
-        DrawableFollow(idUser,holder)
+        if (idUser==mAth.currentUser!!.uid){
+            holder.binding.tvFollow.visibility = View.VISIBLE
+            holder.binding.tvFollow.text = "You"
+        }else checkFollowing(idUser,holder)
+
     }
 
-    private fun DrawableFollow(idUser: String?, holder: ViewHolder) {
+    private fun checkFollowing(idUser: String?, holder: ViewHolder) {
+        var follow = 0
         val fDatabase = FirebaseDatabase.getInstance().getReference("Following")
         fDatabase.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.child(mAth.currentUser!!.uid).hasChild(idUser!!)){
-                    holder.binding.btnFollow.setBackgroundColor(ContextCompat.getColor(activity, R.color.follow))
-                    holder.binding.btnFollow.setText("Following")
-                    holder.binding.btnFollow.setTextColor(Color.WHITE)
+                    holder.binding.tvFollow.visibility = View.VISIBLE
+                    holder.binding.tvFollow.text = "Following"
+                    follow += 1
+                    checkFollower(idUser,holder,follow)
                 }else{
-                    holder.binding.btnFollow.setBackgroundColor(Color.WHITE)
-                    holder.binding.btnFollow.setText("Follow")
-                    holder.binding.btnFollow.setTextColor(Color.BLACK)
-
+                    checkFollower(idUser,holder,follow)
                 }
             }
 
@@ -84,50 +83,24 @@ class SearchAdapter(val activity: Context, val searchList: ArrayList<ReadUser>) 
         })
     }
 
-    private fun Follow(idUser: String?) {
-        var like = true
-        val fDatabase = FirebaseDatabase.getInstance().getReference("Following")
-        fDatabase.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-               if(like == true){
-                   if (snapshot.child(mAth.currentUser!!.uid).hasChild(idUser!!)){
-                       fDatabase.child(mAth.currentUser!!.uid).child(idUser!!).removeValue()
-                       DeleteFollower(idUser)
-                       like = false
-
+    private fun checkFollower(idUser: String?, holder: ViewHolder, follow: Int) {
+       val fDatabase = FirebaseDatabase.getInstance().getReference("Follower")
+       fDatabase.addValueEventListener(object :ValueEventListener{
+           override fun onDataChange(snapshot: DataSnapshot) {
+               if (snapshot.child(mAth.currentUser!!.uid).hasChild(idUser!!)){
+                   holder.binding.tvFollow.visibility = View.VISIBLE
+                   if (follow==1){
+                       holder.binding.tvFollow.visibility = View.VISIBLE
+                       holder.binding.tvFollow.text = "Followed"
                    }else{
-                       fDatabase.child(mAth.currentUser!!.uid).child(idUser!!).setValue(true)
-                       AddFollower(idUser)
-                       like = false
+                       holder.binding.tvFollow.visibility = View.VISIBLE
+                       holder.binding.tvFollow.text = "Follower"
                    }
                }
-            }
+           }
 
-
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })
-
-    }
-
-    private fun AddFollower(idUser: String) {
-        val fDatabase1 = FirebaseDatabase.getInstance().getReference("Follower")
-        fDatabase1.child(idUser!!).child(mAth.currentUser!!.uid).setValue(true)
-
-    }
-
-    private fun DeleteFollower(idUser: String) {
-        val fDatabase2 = FirebaseDatabase.getInstance().getReference("Follower")
-        fDatabase2.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.child(mAth.currentUser!!.uid).hasChild(idUser!!)){
-                    fDatabase2.child(idUser!!).child(mAth.currentUser!!.uid).removeValue()
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })
-    }
+           override fun onCancelled(error: DatabaseError) {
+           }
+       })
+   }
 }

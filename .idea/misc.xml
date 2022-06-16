@@ -6,10 +6,13 @@
         <entry key="..\:/Android Project/DoAn3/DoAn3/app/src/main/res/layout/activity_login.xml" value="0.23148148148148148" />
         <entry key="..\:/Android Project/DoAn3/DoAn3/app/src/main/res/layout/activity_signup.xml" value="0.4" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/drawable/border_btn.xml" value="0.163" />
+        <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/drawable/border_edt.xml" value="0.223" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/drawable/border_layout.xml" value="0.163" />
+        <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/drawable/btn_like.xml" value="0.223" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_post.xml" value="0.264" />
+        <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_search.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_signup.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/custom_image_view.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/custom_success_dialog.xml" value="0.25" />
@@ -18,10 +21,12 @@
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/fragment_user.xml" value="0.10989583333333333" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/item_comment.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/item_post.xml" value="0.264" />
+        <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/item_user.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/menu/bottom_nav.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/menu/menu_appbar.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/menu/menu_item_post.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/menu/menu_item_post1.xml" value="0.25" />
+        <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/menu/menu_post.xml" value="0.25" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/drawable/border_layout.xml" value="0.253" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_comment.xml" value="0.3625" />
         <entry key="..\:/Android/DoAn3/app/src/main/res/layout/activity_editprofile.xml" value="0.3619791666666667" />

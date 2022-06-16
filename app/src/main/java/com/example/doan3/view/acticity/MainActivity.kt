@@ -29,34 +29,7 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.fragmentContainerView)
         nav.setupWithNavController(navController)
 
-       /* val popupMenu = PopupMenu(binding.root.context,binding.btnMenuHome)
-        popupMenu.setOnMenuItemClickListener {
-            when (it.itemId){
-                R.id.profile->{
-                    val intent = Intent(this,ProfileActivity::class.java)
-                    intent.putExtra("idUser", mAuth.currentUser!!.uid)
-                    startActivity(intent)
-                }
-                R.id.logout->{
-                   buildDialog()!!.show()
-                }
-            }
-            false
-        }
-        popupMenu.inflate(R.menu.menu_appbar)
-        popupMenu.gravity = Gravity.RIGHT
-        popupMenu.setForceShowIcon(true)
-
-
-        binding.btnMenuHome.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(p0: View?) {
-                popupMenu.show()
-            }
-
-        })*/
         binding.btnSearch.setOnClickListener{searchActivity()}
-
-
     }
 
     private fun searchActivity() {

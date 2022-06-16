@@ -32,13 +32,15 @@ class SearchActivity : AppCompatActivity() {
 
         binding.edtSearch.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun afterTextChanged(p0: Editable?) {
-                if (binding.edtSearch.text.isNotEmpty()){
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                var text = binding.edtSearch.text
+                if (text.isNotEmpty()){
                     binding.rcvSearch.visibility = View.VISIBLE
                     SearchUser(binding.edtSearch.text.toString())
-                }
+                }else binding.rcvSearch.visibility = View.GONE
+
             }
+            override fun afterTextChanged(p0: Editable?) {}
 
         })
 
@@ -58,7 +60,6 @@ class SearchActivity : AppCompatActivity() {
                         }
                         Log.d("tesstSearch",profileList.size.toString())
                     }
-                    profileList.removeAll { it.userId==fAuth.currentUser!!.uid }
                     binding.rcvSearch.adapter = SearchAdapter(this@SearchActivity,profileList)
                 }
 

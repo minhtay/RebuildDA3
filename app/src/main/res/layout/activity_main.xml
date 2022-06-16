@@ -28,8 +28,8 @@
 
             <ImageView
                 android:id="@+id/btnNofication"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_marginEnd="28dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_nofication"
@@ -40,8 +40,8 @@
 
             <ImageButton
                 android:id="@+id/btnSearch"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_marginEnd="20dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="TODO"

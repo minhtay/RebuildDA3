@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/shareNow"
-        android:icon="@drawable/ic_share"
+        android:icon="@drawable/ic_share_menu"
         android:title="Share Now" />
 
     <item
         android:id="@+id/moreOption"
-        android:icon="@drawable/ic_edit"
+        android:icon="@drawable/ic_share_more_menu"
         android:title="More Option" />
 </menu>
