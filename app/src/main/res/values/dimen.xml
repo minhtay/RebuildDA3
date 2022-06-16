@@ -6,4 +6,6 @@
     <dimen name="number">15dp</dimen>
     <dimen name="typle_post">15dp</dimen>
     <dimen name="image_height">250dp</dimen>
+    <dimen name="cmt">16dp</dimen>
+
 </resources>

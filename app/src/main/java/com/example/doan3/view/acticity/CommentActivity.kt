@@ -46,7 +46,7 @@ class CommentActivity : AppCompatActivity() {
                             val data = uSnapshot.getValue(ReadUser::class.java)
                             profileList.add(data!!)
                             Glide.with(binding.root).load(profileList[0].userAvatar)
-                                .into(binding.imAvatar)
+                                .into(binding.imvAvatar)
                         }
                     }
                 }
@@ -61,13 +61,13 @@ class CommentActivity : AppCompatActivity() {
         idPost = intent.getStringExtra("idPost")
         binding.btnPostComment.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                if (!binding.tvComment.text.isEmpty()) {
+                if (!binding.edtComment.text.isEmpty()) {
                     val id = UUID.randomUUID().toString()
                     val data = UpComment(
                         id,
                         idPost,
                         mAuth.currentUser!!.uid,
-                        binding.tvComment.text.toString(),
+                        binding.edtComment.text.toString(),
                         ServerValue.TIMESTAMP,
                         ServerValue.TIMESTAMP
                     )
@@ -80,7 +80,8 @@ class CommentActivity : AppCompatActivity() {
                             Snackbar.LENGTH_SHORT
                         ).show()
                         com.example.doan3.util.Utils.hideSoftKeyboard(this@CommentActivity,binding.root)
-                        binding.tvComment.text.clear()
+                        binding.edtComment.text.clear()
+                        binding.edtComment.clearFocus()
                         Nofication()
                     }.addOnFailureListener {
                         Snackbar.make(

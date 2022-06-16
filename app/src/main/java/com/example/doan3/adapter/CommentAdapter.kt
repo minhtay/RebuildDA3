@@ -77,8 +77,7 @@ class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadComm
                             profileList.add(data!!)
                             Glide.with(holder.binding.root.context).load(profileList[0].userAvatar)
                                 .into(holder.binding.imvAvatar)
-                            val name = profileList[0].userName
-                            holder.binding.tvComment.text = SpanString(name, comment)
+                            holder.binding.tvUserName.text = profileList[0].userName
                         }
                     }
                 }
@@ -89,13 +88,19 @@ class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadComm
 
             })
 
+        holder.binding.tvComent.text = comment
+
         val format = SimpleDateFormat("MM/dd/yyyy")
         holder.binding.tvDateCreate.text = format.format(dateCreate)
 
+        if (idUser!=mAth.currentUser!!.uid){
+            holder.binding.btnMenu.isEnabled = false
+            holder.binding.btnMenu.setImageResource(0)
+        }
         holder.binding.btnMenu.setOnClickListener(object : View.OnClickListener {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onClick(p0: View?) {
-                val popupMenu = PopupMenu(holder.binding.btnMenu.context, holder.binding.root)
+                val popupMenu = PopupMenu(holder.binding.root.context,holder.binding.btnMenu )
                 popupMenu.setOnMenuItemClickListener {
                     when (it.itemId) {
                         R.id.delete -> {
@@ -131,7 +136,7 @@ class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadComm
                     false
                 }
                 popupMenu.inflate(R.menu.menu_comment)
-                popupMenu.gravity = Gravity.RIGHT
+                popupMenu.gravity = Gravity.BOTTOM
                 popupMenu.setForceShowIcon(true)
                 popupMenu.show()
             }
@@ -173,21 +178,6 @@ class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadComm
         holder.binding.constraint1.visibility = View.GONE
         holder.binding.btnEditComent.visibility = View.GONE
         holder.binding.btnCancel.visibility = View.GONE
-    }
-
-    private fun SpanString(name: String?, comment: String?): SpannableStringBuilder {
-        val span = SpannableStringBuilder(name + "  " + comment)
-        span.setSpan(StyleSpan(Typeface.BOLD), 0, name!!.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            .toString()
-        span.setSpan(RelativeSizeSpan(1.2f), 0, name!!.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            .toString()
-        span.setSpan(
-            ForegroundColorSpan(Color.BLACK),
-            0,
-            name!!.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        ).toString()
-        return span
     }
 
     private fun buildDialog(
