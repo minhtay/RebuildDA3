@@ -1,9 +1,20 @@
 <resources>
     <string name="app_name">DoAn3</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="todo">todo</string>
 
     <string name="facebook_app_id">321967610019256</string>
     <string name="fb_login_protocol_scheme">fb321967610019256</string>
 
+    <!-- value mainActivity -->
+    <string name="edt_title">What are you thinking ?</string>
+    <string name="tv_add_photo">Add Photo</string>
+    <string name="tv_add_video">Add Video</string>
+    <string name="btn_post">Post</string>
+
+    <!-- value ItemPost -->
+    <string name="btnLike">Like</string>
+    <string name="btnComment">Comment</string>
+    <string name="btnShare">Share</string>
 
 </resources>

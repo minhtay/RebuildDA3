@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.fragmentContainerView)
         nav.setupWithNavController(navController)
 
-        val popupMenu = PopupMenu(binding.root.context,binding.btnMenuHome)
+       /* val popupMenu = PopupMenu(binding.root.context,binding.btnMenuHome)
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId){
                 R.id.profile->{
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                 popupMenu.show()
             }
 
-        })
+        })*/
         binding.btnSearch.setOnClickListener{searchActivity()}
 
 

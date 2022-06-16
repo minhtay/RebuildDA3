@@ -1,18 +1,19 @@
 package com.example.doan3.adapter
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
-import android.view.Gravity
+import android.view.Gravity.END
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
-import androidx.annotation.RequiresApi
-import androidx.cardview.widget.CardView
+import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.doan3.R
@@ -31,32 +32,38 @@ import com.google.firebase.database.*
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Locale.getDefault
 import kotlin.collections.ArrayList
 
-class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
+
+class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPost>) :
     RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     private lateinit var mAuth: FirebaseAuth
+    private var idPost: String? = null
+
 
     class ViewHolder(val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            ItemPostBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
+        val view = ItemPostBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
         )
+        return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
         Log.d("DatabaseError", postList.size.toString())
-
         return postList.size
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    fun clear() {
+        postList.clear()
+        notifyDataSetChanged()
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         mAuth = FirebaseAuth.getInstance()
@@ -70,73 +77,64 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
         val photo = postList[position].photo
         val dateCreate = postList[position].dateCreate
         val dateUpdate = postList[position].dateUpdate
-        Log.d("testDate", dateCreate.toString())
 
-        LoadUser(holder.binding.root, idUser, holder.binding.imvAvatar, holder.binding.tvName)
+        loadUser(holder.binding.root, idUser, holder.binding.imvAvatar, holder.binding.tvName)
 
-        // chuyển đổi và hiển thị dateCreate
-        LoadDate(dateCreate, holder.binding.tvDateCreate)
+        // chuyển đổi và hiển thị dateCreate*/
+        this.loadDate(dateCreate, holder.binding.tvDateCreate)
 
-        LoadLikeNumber(idPost, holder.binding.like, holder.binding.tvLikeNumber)
+        loadLikeNumber(idPost, holder.binding.imgLike, holder.binding.tvLikeNumber)
 
-        LoadCommentNumber(idPost, holder.binding.tvCommentNumber)
+        loadCommentNumber(idPost, holder.binding.tvCommentNumber)
 
-        LoadShareNumber(idPost, holder.binding.tvShareNumber)
+        loadShareNumber(idPost, holder.binding.tvShareNumber)
 
-        holder.binding.detailsLayout.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                val intent = Intent(holder.binding.root.context, PostActivity::class.java)
-                intent.putExtra("idPost", idPost)
-                intent.putExtra("typePost", typePost)
-                intent.putExtra("idShare", idShare)
-                intent.putExtra("idUser", idUser)
-                intent.putExtra("title", title)
-                intent.putExtra("photo", photo)
-                intent.putExtra("dateCreate", dateCreate.toString())
-                intent.putExtra("dateUpdate", dateUpdate.toString())
-                holder.binding.root.context.startActivity(intent)
-            }
-        })
+        if (photo != null) {
+            holder.binding.imPhoto.visibility = View.VISIBLE
+        }
+
+        holder.binding.detailsLayout.setOnClickListener {
+            val intent = Intent(holder.binding.root.context, PostActivity::class.java)
+            intent.putExtra("idPost", idPost)
+            intent.putExtra("typePost", typePost)
+            intent.putExtra("idShare", idShare)
+            intent.putExtra("idUser", idUser)
+            intent.putExtra("title", title)
+            intent.putExtra("photo", photo)
+            intent.putExtra("dateCreate", dateCreate.toString())
+            intent.putExtra("dateUpdate", dateUpdate.toString())
+            holder.binding.root.context.startActivity(intent)
+        }
 
         // xét sự kiện cho btn like
-        holder.binding.btnLike.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                var like = true
-                val fDatabase = FirebaseDatabase.getInstance().getReference("Like")
-                fDatabase.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        if (like == true) {
-                            if (snapshot.child(idPost!!).hasChild(mAuth.currentUser?.uid!!)) {
-                                fDatabase.child(idPost).child(mAuth.currentUser!!.uid).removeValue()
-                                like = false
-                            } else {
-                                fDatabase.child(idPost).child(mAuth.currentUser!!.uid)
-                                    .setValue(true)
-                                Nofication("liked your post", idUser!!)
-                                like = false
-                            }
-                        }
+        holder.binding.btnLike.setOnClickListener {
+            val fDatabase = FirebaseDatabase.getInstance().getReference("Like")
+            fDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.child(idPost!!).hasChild(mAuth.currentUser?.uid!!)) {
+                        fDatabase.child(idPost).child(mAuth.currentUser!!.uid).removeValue()
+                    } else {
+                        fDatabase.child(idPost).child(mAuth.currentUser!!.uid)
+                            .setValue(true)
+                        uploadNofication("liked your post", idUser!!)
                     }
 
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.d("DatabaseError", error.message)
-                    }
+                }
 
-                })
-            }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("DatabaseError", error.message)
+                }
 
-        })
+            })
+        }
 
-        holder.binding.btnComment.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                val intent = Intent(holder.binding.root.context, CommentActivity::class.java)
-                intent.putExtra("idPost", idPost)
-                intent.putExtra("idUser", idUser)
+        holder.binding.btnComment.setOnClickListener {
+            val intent = Intent(holder.binding.root.context, CommentActivity::class.java)
+            intent.putExtra("idPost", idPost)
+            intent.putExtra("idUser", idUser)
 
-                holder.binding.root.context.startActivity(intent)
-            }
-
-        })
+            holder.binding.root.context.startActivity(intent)
+        }
 
         if (title == null) {
             holder.binding.tvTitle.visibility = View.GONE
@@ -148,20 +146,20 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
             Glide.with(holder.binding.root).load(photo).into(holder.binding.imPhoto)
 
         } else {
-            holder.binding.tvTypePost.text = "Shared a post"
+            "Shared a post".also { holder.binding.tvTypePost.text = it }
             holder.binding.tvTitle.text = title
-            LoadPostShare(holder, idShare)
+            loadPostShare(holder, idShare)
         }
 
         holder.binding.btnShare.setOnClickListener {
-            val popupMenu = PopupMenu(holder.binding.btnLike.context, holder.binding.root)
+            val popupMenu = PopupMenu(holder.binding.btnShare.context, holder.binding.root)
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.shareNow -> {
-                        Log.d("menuShare", "1")
+                        Log.d("Resut","share start")
                         val id = UUID.randomUUID().toString()
                         if (typePost == "Post") {
-                            var data = UploadPost(
+                            UploadPost(
                                 id,
                                 "Share",
                                 idPost,
@@ -170,12 +168,13 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
                                 null,
                                 ServerValue.TIMESTAMP,
                                 ServerValue.TIMESTAMP
-                            )
-                            ShareNow(holder, id, data)
-                            Nofication("shared your post", idUser!!)
+                            ).apply {
+                                shareNow(holder.binding.root, id, this)
+                            }
+                            uploadNofication("shared your post", idUser!!)
 
                         } else {
-                            var data = UploadPost(
+                            UploadPost(
                                 id,
                                 "Share",
                                 idShare,
@@ -184,8 +183,9 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
                                 null,
                                 ServerValue.TIMESTAMP,
                                 ServerValue.TIMESTAMP
-                            )
-                            ShareNow(holder, id, data)
+                            ).apply {
+                                shareNow(holder.binding.root, id, this)
+                            }
 
                         }
                     }
@@ -195,24 +195,49 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
                             Intent(holder.binding.root.context, SharePostActivity::class.java)
                         if (typePost == "Post") {
                             intent.putExtra("idPost", idPost)
-                        } else {
-                            intent.putExtra("idPost", idShare)
-                        }
+                        } else intent.putExtra("idPost", idShare)
                         holder.binding.root.context.startActivity(intent)
                     }
                 }
                 false
             }
             popupMenu.inflate(R.menu.menu_post)
-            popupMenu.gravity = Gravity.RIGHT
+            END.also { popupMenu.gravity = it }
+            popupMenu.setForceShowIcon(true)
+            popupMenu.show()
+        }
+
+
+        holder.binding.btnMenu.setOnClickListener {
+            val popupMenu = PopupMenu(holder.binding.btnMenu.context, holder.binding.root)
+            popupMenu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.delete -> {
+                        if (idUser != mAuth.currentUser!!.uid){
+                            if (typePost == "Post") {
+
+                            } else {
+                                buildDialog(holder.binding.root)?.show()
+                            }
+                        }else{
+
+                        }
+                    }
+                    R.id.favorite -> {}
+                    R.id.save_post -> {}
+                }
+                false
+            }
+            popupMenu.inflate(R.menu.menu_item_post)
+            END.also { popupMenu.gravity = it }
             popupMenu.setForceShowIcon(true)
             popupMenu.show()
         }
 
     }
 
-    private fun LoadUser(
-        context: CardView,
+    private fun loadUser(
+        context: ConstraintLayout,
         idUser: String?,
         imAvatar: CircleImageView,
         tvName: TextView
@@ -240,20 +265,29 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
             })
     }
 
-    private fun ShareNow(holder: ViewHolder, id: String, data: UploadPost) {
+    private fun shareNow(holder: ConstraintLayout, id: String, data: UploadPost) {
         val ref = FirebaseDatabase.getInstance().getReference("Post")
         ref.child(id).setValue(data).addOnSuccessListener {
-            Snackbar.make(
-                holder.binding.root,
-                "Share post success",
-                Snackbar.LENGTH_SHORT
-            ).show()
+            Log.d("Resut","share resuft")
+            dialogSuccess()
         }.addOnFailureListener {
             Log.e("Sharenow", "Share post failed")
         }
+
     }
 
-    private fun LoadPostShare(holder: ViewHolder, idShare: String?) {
+    private fun dialogSuccess() {
+        val diaolog = Dialog(activity)
+        diaolog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        diaolog.setContentView(R.layout.custom_success_dialog)
+        diaolog.setCancelable(true)
+        val view = diaolog.findViewById<ConstraintLayout>(R.id.layoutDialog)
+        view.setOnClickListener { diaolog.dismiss() }
+        diaolog.show()
+        Log.d("Resut","share finish")
+    }
+
+    private fun loadPostShare(holder: ViewHolder, idShare: String?) {
         val ref = FirebaseDatabase.getInstance().getReference("Post")
         val postlist = ArrayList<ReadPost>()
         ref.orderByChild("idPost").equalTo(idShare)
@@ -263,7 +297,7 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
                         for (uSnapshot in snapshot.children) {
                             val data = uSnapshot.getValue(ReadPost::class.java)
                             postlist.add(data!!)
-                            LoadUser(
+                            loadUser(
                                 holder.binding.root,
                                 postlist[0].idUser,
                                 holder.binding.imvAvatar2,
@@ -272,8 +306,7 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
 
                         }
                         holder.binding.tvTitle2.text = postlist[0].title
-                        Log.d("1234", postlist[0].title!!)
-                        LoadDate(postlist[0].dateCreate, holder.binding.tvDateCreate2)
+                        loadDate(postlist[0].dateCreate, holder.binding.tvDateCreate2)
                         Glide.with(holder.binding.root).load(postlist[0].photo)
                             .into(holder.binding.ivPhoto2)
                     }
@@ -287,20 +320,24 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
 
     }
 
-    private fun LoadDate(dateCreate: Long?, tvDateCreate: TextView) {
-        val format = SimpleDateFormat("dd/MM/yyyy")
+    private fun loadDate(dateCreate: Long?, tvDateCreate: TextView) {
+        val format = SimpleDateFormat("dd/MM/yyyy", getDefault())
         tvDateCreate.text = format.format(dateCreate)
     }
 
-    private fun LoadLikeNumber(idPost: String?, like: ImageView, tvLikeNumber: TextView) {
+    private fun loadLikeNumber(idPost: String?, like: ImageView, tvLikeNumber: TextView) {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Like")
         fDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.child(idPost!!).hasChild(mAuth.currentUser!!.uid)) {
-                    tvLikeNumber.text = snapshot.child(idPost).childrenCount.toString() + " Like"
+                    (snapshot.child(idPost).childrenCount.toString() + " Like").also {
+                        tvLikeNumber.text = it
+                    }
                     like.setImageResource(R.drawable.ic_like_red)
                 } else {
-                    tvLikeNumber.text = snapshot.child(idPost).childrenCount.toString() + " Like"
+                    (snapshot.child(idPost).childrenCount.toString() + " Like").also {
+                        tvLikeNumber.text = it
+                    }
                     like.setImageResource(R.drawable.ic_like)
                 }
             }
@@ -311,12 +348,13 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
         })
     }
 
-    private fun LoadCommentNumber(idPost: String?, tvCommentNumber: TextView) {
+    private fun loadCommentNumber(idPost: String?, tvCommentNumber: TextView) {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Comment")
         fDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                tvCommentNumber.text =
-                    snapshot.child(idPost!!).childrenCount.toString() + " Comment"
+                (snapshot.child(idPost!!).childrenCount.toString() + " Comment").also {
+                    tvCommentNumber.text = it
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -326,12 +364,12 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
         })
     }
 
-    private fun LoadShareNumber(idPost: String?, tvShareNumber: TextView) {
+    private fun loadShareNumber(idPost: String?, tvShareNumber: TextView) {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Post")
         fDatabase.orderByChild("idShare").equalTo(idPost)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    tvShareNumber.text = snapshot.childrenCount.toString() + " Share"
+                    (snapshot.childrenCount.toString() + " Share").also { tvShareNumber.text = it }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -341,7 +379,7 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
             })
     }
 
-    private fun Nofication(mess: String, userId: String) {
+    private fun uploadNofication(mess: String, userId: String) {
         val id = UUID.randomUUID().toString()
         val data = UpNofication(
             id,
@@ -354,5 +392,23 @@ class PostAdapter(val activity: Context, val postList: ArrayList<ReadPost>) :
             ServerValue.TIMESTAMP
         )
         NoficationClass().UpNofication(data)
+    }
+
+    private fun buildDialog(context: ConstraintLayout): AlertDialog.Builder? {
+        val builder = AlertDialog.Builder(context.context)
+        builder.setTitle("Delete post ")
+        builder.setMessage("Are you sure you want to delete the post?")//Bạn có chắc chắn, bạn có muốn đăng xuất không?
+        builder.setPositiveButton("Delete") { dialog, which ->
+            deletePost(context)
+        }
+        builder.setNeutralButton("Cancel") { dialog, which -> }
+        return builder
+    }
+
+    private fun deletePost(context: ConstraintLayout) {
+        FirebaseDatabase.getInstance().getReference("Post/$idPost").removeValue()
+            .addOnSuccessListener {
+                Snackbar.make(context, "Delete post success", Snackbar.LENGTH_SHORT).show()
+            }
     }
 }

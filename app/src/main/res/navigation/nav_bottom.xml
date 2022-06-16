@@ -11,18 +11,8 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
-        android:id="@+id/addPostFragment"
-        android:name="com.example.doan3.view.fragment.AddPostFragment"
-        android:label="fragment_add_post"
-        tools:layout="@layout/fragment_add_post" >
-
-        <action
-            android:id="@+id/action_addPostFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/notificationFragment"
-        android:name="com.example.doan3.view.fragment.NotificationFragment"
-        android:label="fragment_notification"
-        tools:layout="@layout/fragment_notification" />
+        android:id="@+id/userFragment"
+        android:name="com.example.doan3.view.fragment.UserFragment"
+        android:label="fragment_user"
+        tools:layout="@layout/fragment_user" />
 </navigation>

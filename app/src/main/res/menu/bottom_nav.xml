@@ -5,11 +5,7 @@
         android:title="Home"
         android:icon="@drawable/ic_home"/>
     <item
-        android:id="@+id/addPostFragment"
-        android:title="Create Post"
-        android:icon="@drawable/ic_add"/>
-    <item
-        android:id="@+id/notificationFragment"
-        android:title="Notification"
-        android:icon="@drawable/ic_nofication"/>
+        android:id="@+id/userFragment"
+        android:title="User"
+        android:icon="@drawable/ic_profile"/>
 </menu>

@@ -116,7 +116,9 @@ class AddPostFragment : Fragment() {
                 "Successfully added new post",
                 Snackbar.LENGTH_LONG
             ).show()
+/*
             findNavController().navigate(com.example.doan3.R.id.action_addPostFragment_to_homeFragment)
+*/
         }
     }
 

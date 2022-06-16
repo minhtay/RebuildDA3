@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="title">18dp</dimen>
+    <dimen name="user_name">20dp</dimen>
+    <dimen name="date">15dp</dimen>
+    <dimen name="number">15dp</dimen>
+    <dimen name="typle_post">15dp</dimen>
+    <dimen name="image_height">250dp</dimen>
+</resources>
