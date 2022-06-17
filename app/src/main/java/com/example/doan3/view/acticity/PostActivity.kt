@@ -1,6 +1,8 @@
 package com.example.doan3.view.acticity
 
+import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -24,13 +26,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
-import com.ortiz.touchview.TouchImageView
 import de.hdodenhof.circleimageview.CircleImageView
 import gun0912.tedimagepicker.builder.TedImagePicker
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Locale.getDefault
-import kotlin.concurrent.timerTask
 
 
 class PostActivity : AppCompatActivity() {
@@ -39,7 +39,11 @@ class PostActivity : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
     private var uID: String? = null
     private var filePath: Uri? = null
+    private var title: String? = null
+    private var photo: String? = null
 
+
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPostBinding.inflate(layoutInflater)
@@ -51,16 +55,18 @@ class PostActivity : AppCompatActivity() {
         val typePost = intent.getStringExtra("typePost")
         val idShare = intent.getStringExtra("idShare")
         val idUser = intent.getStringExtra("idUser")
-        val title = intent.getStringExtra("title")
-        val photo = intent.getStringExtra("photo")
+        title = intent.getStringExtra("title")
+        photo = intent.getStringExtra("photo")
         val dateCreate = intent.getStringExtra("dateCreate")
         intent.getStringExtra("dateUpdate")
         Log.d("testDateP", dateCreate.toString())
 
         uID = idUser
 
-        if (typePost == "Share") {
+        if (title==null){
             binding.edtTitle.visibility = View.GONE
+        }
+        if (typePost == "Share") {
             binding.imvPhoto.visibility = View.GONE
         }
 
@@ -211,7 +217,7 @@ class PostActivity : AppCompatActivity() {
             val popupMenu = PopupMenu(binding.root.context, binding.btnShare)
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
-                    com.example.doan3.R.id.shareNow -> {
+                    R.id.shareNow -> {
                         val id = UUID.randomUUID().toString()
                         if (typePost == "Post") {
                             UploadPost(
@@ -244,7 +250,7 @@ class PostActivity : AppCompatActivity() {
                         }
                     }
 
-                    com.example.doan3.R.id.moreOption -> {
+                    R.id.moreOption -> {
                         val intent =
                             Intent(this, SharePostActivity::class.java)
                         if (typePost == "Post") {
@@ -258,7 +264,7 @@ class PostActivity : AppCompatActivity() {
                 }
                 false
             }
-            popupMenu.inflate(com.example.doan3.R.menu.menu_post)
+            popupMenu.inflate(R.menu.menu_post)
             END.also { popupMenu.gravity = it }
             popupMenu.setForceShowIcon(true)
             popupMenu.show()
@@ -278,24 +284,41 @@ class PostActivity : AppCompatActivity() {
             val popupMenu = PopupMenu(binding.root.context, binding.btnMenu)
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
-                    com.example.doan3.R.id.delete -> {
-                        deleteDialog(idPost)
+                    R.id.delete -> {
+                        val builder = AlertDialog.Builder(this)
+                        builder.setTitle("Delete post ")
+                        builder.setMessage("Are you sure you want to delete the post?")
+                        builder.setPositiveButton("Delete") { _, _ ->
+                            if (typePost == "Post") {
+                                deletePost(idPost)
+                            } else deletePostShare(idPost)
+                        }
+                        builder.setNeutralButton("Cancel") { _, _ ->
+                        }
+                        builder.show()
 
                     }
-                    com.example.doan3.R.id.edit -> {
+                    R.id.edit -> {
                         Log.d("edit Post", typePost.toString())
-
-                        if (typePost.toString() == "Post") {
-                            Log.d("edit Post", typePost.toString())
-                            binding.edtTitle.isEnabled = true
-                            binding.edtTitle.hint = "What are you thinking ?"
+                        binding.edtTitle.visibility = View.VISIBLE
+                        binding.edtTitle.isEnabled = true
+                        binding.edtTitle.requestFocus()
+                        binding.edtTitle.setSelection(binding.edtTitle.text.length)
+                        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.showSoftInput(binding.edtTitle, InputMethodManager.SHOW_FORCED)
+                        binding.edtTitle.hint = "What are you thinking ?"
+                        binding.btnBack.visibility = View.GONE
+                        binding.btnMenu.visibility = View.GONE
+                        binding.btnCancel.visibility = View.VISIBLE
+                        binding.btnUpdate.visibility = View.VISIBLE
+                        if (typePost == "Post") {
                             binding.btnClearImage.visibility = View.VISIBLE
                         }
                     }
                 }
                 false
             }
-            popupMenu.inflate(com.example.doan3.R.menu.menu_comment)
+            popupMenu.inflate(R.menu.menu_comment)
             END.also { popupMenu.gravity = it }
             popupMenu.setForceShowIcon(true)
             popupMenu.show()
@@ -312,69 +335,67 @@ class PostActivity : AppCompatActivity() {
                 binding.btnClearImage.visibility = View.VISIBLE
                 binding.btnPickimage.visibility = View.GONE
                 filePath = uri
-                binding.layout12.visibility = View.VISIBLE
+                binding.imvPhoto.visibility = View.VISIBLE
                 Log.d("filePath", filePath.toString())
 
             }
         }
-        binding.btnClearImage.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                binding.imvPhoto.setImageResource(0)
-                binding.btnPickimage.visibility = View.VISIBLE
-                binding.btnClearImage.visibility = View.GONE
-                filePath = null
-            }
-
-        })
+        binding.btnClearImage.setOnClickListener {
+            binding.imvPhoto.setImageResource(0)
+            binding.imvPhoto.visibility = View.GONE
+            binding.btnPickimage.visibility = View.VISIBLE
+            binding.btnClearImage.visibility = View.GONE
+            filePath = null
+        }
         binding.layout.setOnClickListener { Utils.hideSoftKeyboard(this, binding.root) }
         binding.btnUpdate.setOnClickListener {
-            with(idPost) { updateTitLe() }
             if (typePost == "Post") {
-                if (filePath != null)
+                val text = binding.edtTitle.text.toString()
+                if (filePath != null) {
                     updateImage(idPost)
+                }else{
+                    if (title!=binding.edtTitle.text.toString()&&binding.edtTitle.text.toString()!=null){
+                        updatePostShare(idPost,text)
+                    }
+                }
+            }else{
+                val text = binding.edtTitle.text.toString()
+                if (title!=null){
+                    if (title!=binding.edtTitle.text.toString()&&binding.edtTitle.text.toString()!=null){
+                        updatePostShare(idPost,text)
+                    }
+                }else {
+                    if(binding.edtTitle.text.toString()!=null){
+                        updatePostShare(idPost,text)
+                    }
+                }
             }
         }
 
         binding.imvPhoto.setOnClickListener {
             val builder =
                 Dialog(this@PostActivity, android.R.style.Theme_Material_NoActionBar_Fullscreen)
-            builder.setContentView(com.example.doan3.R.layout.dialog_image_view)
-            val image = builder.findViewById<TouchImageView>(com.example.doan3.R.id.imageView)
-            val url: String = photo.toString()
+            builder.setContentView(R.layout.dialog_image_view)
             Glide.with(this).load(photo.toString())
-                .into(builder.findViewById(com.example.doan3.R.id.imageView))
+                .into(builder.findViewById(R.id.imageView))
             builder.setCancelable(true)
             builder.setCanceledOnTouchOutside(false)
             builder.show()
         }
 
         binding.btnComment.setOnClickListener {
-            val inputMethodManager: InputMethodManager =
-                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.toggleSoftInputFromWindow(
-                binding.edtComment.getApplicationWindowToken(),
-                InputMethodManager.SHOW_FORCED,
-                0
-            )
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.edtComment, InputMethodManager.SHOW_FORCED)
             binding.edtComment.requestFocus()
         }
 
     }
 
-    private fun String.updateTitLe() {
-        val text = binding.edtTitle.text.toString()
-        val fDatabse = FirebaseDatabase.getInstance().getReference("Post/${this}")
-        fDatabse.child("title").setValue(text)
-        binding.linearLayout3.visibility = View.VISIBLE
-        binding.linearLayout4.visibility = View.VISIBLE
-        binding.linearLayout5.visibility = View.VISIBLE
-        binding.view.visibility = View.VISIBLE
-        binding.view1.visibility = View.VISIBLE
-        binding.layout12.visibility = View.GONE
-        binding.tvNumberLayout.visibility = View.VISIBLE
-        binding.btnClearImage.visibility = View.GONE
-
-
+    private fun updatePostShare(idPost: String, text: String) {
+        FirebaseDatabase.getInstance().getReference("Post/$idPost").child("title").setValue(text).addOnSuccessListener {
+            Snackbar.make(binding.root,"Update post success",Snackbar.LENGTH_SHORT).show()
+            reloadUi()
+        }
     }
 
     private fun updateImage(idPost: String) {
@@ -383,9 +404,14 @@ class PostActivity : AppCompatActivity() {
             val fStorage1 = FirebaseStorage.getInstance().getReference("Post/$idPost")
             fStorage1.putFile(filePath!!).addOnSuccessListener {
                 fStorage1.downloadUrl.addOnSuccessListener {
-                    val fDatabse = FirebaseDatabase.getInstance().getReference("Post/$idPost")
-                    fDatabse.child("photo").setValue(it.toString())
-                    Glide.with(this).load(it.toString()).into(binding.imvPhoto)
+                    if (title!=binding.edtTitle.text.toString()&&binding.edtTitle.text.toString()!=null){
+                        uploadPost(it.toString(),idPost)
+                    }else{
+                        FirebaseDatabase.getInstance().getReference("Post/$idPost").child("photo").setValue(it.toString()).addOnSuccessListener {
+                            Snackbar.make(binding.root,"Update post success",Snackbar.LENGTH_SHORT).show()
+                            reloadUi()
+                        }
+                    }
                 }
 
             }
@@ -393,44 +419,11 @@ class PostActivity : AppCompatActivity() {
 
     }
 
-    private fun deleteDialog(
-        idPost: String?
-    ): AlertDialog.Builder {
-        val builder = AlertDialog.Builder(binding.root.context)
-        builder.setTitle("Delete comment")
-        builder.setMessage("Do you want to delete this comment?")
-        builder.setPositiveButton("Delete") { _, _ ->
-            val dFirebaseDatabase =
-                FirebaseDatabase.getInstance().getReference("Post")
-            dFirebaseDatabase.child(idPost!!).removeValue().addOnSuccessListener {
-                deleteDataComment(idPost)
-                deleteDataLike(idPost)
-                deleteShare(idPost)
-                deleteImage(idPost)
-                Snackbar.make(
-                    binding.root,
-                    "Post deleted",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-                Timer().schedule(timerTask {
-                    finish()
-                }, 1000)
-            }
-
-        }
-        builder.setNeutralButton("Cancel") { _, _ -> }
-        return builder
-    }
-
-    private fun deleteImage(idPost: String) {
-        val fStorage = FirebaseStorage.getInstance().getReference("Post")
-        fStorage.child(idPost).delete()
-    }
-
-    private fun deleteDataLike(idPost: String) {
-        val fDatabase = FirebaseDatabase.getInstance().getReference("Like")
-        fDatabase.child(idPost).removeValue().addOnSuccessListener {
-            Log.d("DeleteDataLike", "success")
+    private fun uploadPost(it: String, idPost: String) {
+        val data = UploadPost(idPost,"Post",null,mAuth.currentUser!!.uid,binding.edtTitle.text.toString(),it,ServerValue.TIMESTAMP,ServerValue.TIMESTAMP)
+        FirebaseDatabase.getInstance().getReference("Post/$idPost").setValue(data).addOnSuccessListener {
+            Snackbar.make(binding.root,"Update post success",Snackbar.LENGTH_SHORT).show()
+            reloadUi()
         }
     }
 
@@ -446,8 +439,6 @@ class PostActivity : AppCompatActivity() {
                             val fDatabase1 = FirebaseDatabase.getInstance().getReference("Post")
                             fDatabase1.child(id!!).removeValue()
                         }
-
-
                     }
                 }
 
@@ -456,14 +447,6 @@ class PostActivity : AppCompatActivity() {
             })
     }
 
-    private fun deleteDataComment(idPost: String) {
-        val fDatabase = FirebaseDatabase.getInstance().getReference("Comment")
-        fDatabase.child(idPost).removeValue().addOnSuccessListener {
-            Log.d("DeleteDataLike", "success")
-        }
-    }
-
-
     private fun loadDateCreate(dateCreate: String?, tvDateCreate: TextView) {
         val format = SimpleDateFormat("yyyy-MM-dd", getDefault())
         tvDateCreate.text = format.format(dateCreate!!.toLong())
@@ -471,7 +454,7 @@ class PostActivity : AppCompatActivity() {
 
     private fun loadUser(idUser: String?, imvAvatar: CircleImageView, tvName: TextView) {
         val ref = FirebaseDatabase.getInstance().getReference("User")
-        val profileList = java.util.ArrayList<ReadUser>()
+        val profileList = ArrayList<ReadUser>()
         ref.orderByChild("userId").equalTo(idUser)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -565,19 +548,13 @@ class PostActivity : AppCompatActivity() {
     }
 
     private fun reloadUi() {
-        binding.btnMenu.isEnabled = true
+        binding.btnMenu.visibility = View.VISIBLE
+        binding.btnBack.visibility = View.VISIBLE
         binding.edtTitle.isEnabled = false
-        binding.tvNumberLayout.visibility = View.VISIBLE
-        binding.linearLayout3.visibility = View.VISIBLE
-        binding.linearLayout4.visibility = View.VISIBLE
-        binding.view.visibility = View.VISIBLE
-        binding.view1.visibility = View.VISIBLE
-        binding.linearLayout5.visibility = View.VISIBLE
-        binding.layout12.visibility = View.GONE
-        binding.edtTitle.hint = ""
         binding.btnClearImage.visibility = View.GONE
         binding.btnPickimage.visibility = View.GONE
-        binding.edtTitle.isEnabled = false
+        binding.btnCancel.visibility = View.GONE
+        binding.btnUpdate.visibility = View.GONE
         filePath = null
     }
 
@@ -593,6 +570,85 @@ class PostActivity : AppCompatActivity() {
         }.addOnFailureListener {
             Log.e("Sharenow", "Share post failed")
         }
+    }
+
+    private fun deletePost(idPost: String?) {
+        val fdata = FirebaseDatabase.getInstance().getReference("Post")
+        fdata.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.hasChild(idPost!!)) {
+                    Log.d("Delete post", "post")
+                    fdata.child(idPost).removeValue().addOnSuccessListener {
+                        idPost.deleteComment()
+                        idPost.deleteLike()
+                        deleteSharePost(idPost)
+                        Snackbar.make(binding.root, "Delete post success", Snackbar.LENGTH_LONG)
+                            .show()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("Delete post", error.toString())
+            }
+
+        })
+    }
+
+    private fun deletePostShare(idPost: String?) {
+        val fdata = FirebaseDatabase.getInstance().getReference("Post")
+        fdata.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.hasChild(idPost!!)) {
+                    Log.d("Delete post", "post")
+                    fdata.child(idPost).removeValue().addOnSuccessListener {
+                        idPost.deleteComment()
+                        idPost.deleteLike()
+                        Snackbar.make(binding.root, "Delete post success", Snackbar.LENGTH_LONG)
+                            .show()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("Delete post", error.toString())
+            }
+
+        })
+    }
+
+    private fun String.deleteLike() {
+        val fDatabase = FirebaseDatabase.getInstance().getReference("Like")
+        fDatabase.child(this).removeValue().addOnSuccessListener {
+            Log.d("delete like", "success")
+        }
+    }
+
+    private fun String.deleteComment() {
+        val fDatabase = FirebaseDatabase.getInstance().getReference("Comment")
+        fDatabase.child(this).removeValue().addOnSuccessListener {
+            Log.d("delete comment", "success")
+        }
+    }
+
+    private fun deleteSharePost(idPost: String) {
+        val fDatabase = FirebaseDatabase.getInstance().getReference("Post")
+        fDatabase.orderByChild("idShare").equalTo(idPost)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (u in snapshot.children) {
+                            val data = u.getValue(ReadPost::class.java)
+                            val id = data!!.idPost
+                            deleteShare(id!!)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("Delete post", error.toString())
+                }
+            })
     }
 
 }

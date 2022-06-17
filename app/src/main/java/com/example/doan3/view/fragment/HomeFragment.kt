@@ -109,6 +109,7 @@ class HomeFragment : Fragment() {
                     Snackbar.LENGTH_LONG
                 ).show()
                 resetView()
+                binding.edtTitle.clearFocus()
             }.addOnFailureListener {
                 Snackbar.make(
                     binding.root,
