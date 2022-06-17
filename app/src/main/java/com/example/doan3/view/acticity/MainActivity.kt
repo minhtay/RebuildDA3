@@ -30,25 +30,15 @@ class MainActivity : AppCompatActivity() {
         nav.setupWithNavController(navController)
 
         binding.btnSearch.setOnClickListener{searchActivity()}
+        binding.btnNofication.setOnClickListener {
+            val intent = Intent(this,NoficationActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun searchActivity() {
         val intent = Intent(this,SearchActivity::class.java)
         startActivity(intent)
-    }
-
-    private fun buildDialog(): AlertDialog.Builder? {
-        val builder = AlertDialog.Builder(binding.root.context)
-        builder.setTitle("Logout")
-        builder.setMessage("Are you sure, do you want to logout?")//Bạn có chắc chắn, bạn có muốn đăng xuất không?
-        builder.setPositiveButton("Logout") { dialog, which ->
-            mAuth.signOut()
-            val intent = Intent(this,LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-        builder.setNeutralButton("Cancel") { dialog, which -> }
-        return builder
     }
 
 }

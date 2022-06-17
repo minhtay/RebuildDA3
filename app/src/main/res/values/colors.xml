@@ -8,11 +8,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#CECECE</color>
+    <color name="grey1">#CECECE</color>
 
     <color name="boder">#505050</color>
     <color name="follow">#e18aaa</color>
     <color name="status">#55b3d9</color>
     <color name="btn_post_home">#F85802</color>
-
-
+    <color name="nofication">#e7f3ff</color>
 </resources>

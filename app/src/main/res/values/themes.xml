@@ -14,4 +14,8 @@
         <item name="android:windowLightStatusBar">true</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.RemoveSplashScreenTheme" parent="@style/Theme.DoAn3">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

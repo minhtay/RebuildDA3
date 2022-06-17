@@ -29,6 +29,7 @@ import com.example.doan3.view.acticity.PostActivity
 import com.example.doan3.view.acticity.SharePostActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.ortiz.touchview.TouchImageView
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,6 +41,7 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
     RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     private lateinit var mAuth: FirebaseAuth
+    private var photo2 : String? = null
 
 
     class ViewHolder(val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root)
@@ -92,7 +94,7 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
             holder.binding.imPhoto.visibility = View.VISIBLE
         }
 
-        holder.binding.detailsLayout.setOnClickListener {
+        holder.binding.tvTitle.setOnClickListener {
             val intent = Intent(holder.binding.root.context, PostActivity::class.java)
             intent.putExtra("idPost", idPost)
             intent.putExtra("typePost", typePost)
@@ -103,6 +105,59 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
             intent.putExtra("dateCreate", dateCreate.toString())
             intent.putExtra("dateUpdate", dateUpdate.toString())
             holder.binding.root.context.startActivity(intent)
+        }
+        holder.binding.tvTitle2.setOnClickListener {
+            val intent = Intent(holder.binding.root.context, PostActivity::class.java)
+            intent.putExtra("idPost", idPost)
+            intent.putExtra("typePost", typePost)
+            intent.putExtra("idShare", idShare)
+            intent.putExtra("idUser", idUser)
+            intent.putExtra("title", title)
+            intent.putExtra("photo", photo)
+            intent.putExtra("dateCreate", dateCreate.toString())
+            intent.putExtra("dateUpdate", dateUpdate.toString())
+            holder.binding.root.context.startActivity(intent)
+        }
+
+        holder.binding.imPhoto.setOnClickListener {
+            holder.binding.tvTitle.setOnClickListener {
+                val intent = Intent(holder.binding.root.context, PostActivity::class.java)
+                intent.putExtra("idPost", idPost)
+                intent.putExtra("typePost", typePost)
+                intent.putExtra("idShare", idShare)
+                intent.putExtra("idUser", idUser)
+                intent.putExtra("title", title)
+                intent.putExtra("photo", photo)
+                intent.putExtra("dateCreate", dateCreate.toString())
+                intent.putExtra("dateUpdate", dateUpdate.toString())
+                holder.binding.root.context.startActivity(intent)
+            }
+        }
+
+        holder.binding.imPhoto.setOnClickListener {
+            val builder =
+                Dialog(activity, android.R.style.Theme_Material_NoActionBar_Fullscreen)
+            builder.setContentView(com.example.doan3.R.layout.dialog_image_view)
+            val image = builder.findViewById<TouchImageView>(com.example.doan3.R.id.imageView)
+            val url: String = photo.toString()
+            Glide.with(builder.context).load(photo.toString())
+                .into(builder.findViewById(com.example.doan3.R.id.imageView))
+            builder.setCancelable(true)
+            builder.setCanceledOnTouchOutside(false)
+            builder.show()
+        }
+
+        holder.binding.ivPhoto2.setOnClickListener {
+            val builder =
+                Dialog(activity, android.R.style.Theme_Material_NoActionBar_Fullscreen)
+            builder.setContentView(com.example.doan3.R.layout.dialog_image_view)
+            val image = builder.findViewById<TouchImageView>(com.example.doan3.R.id.imageView)
+            val url: String = photo.toString()
+            Glide.with(builder.context).load(photo2.toString())
+                .into(builder.findViewById(com.example.doan3.R.id.imageView))
+            builder.setCancelable(true)
+            builder.setCanceledOnTouchOutside(false)
+            builder.show()
         }
 
         // xét sự kiện cho btn like
@@ -241,13 +296,13 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
         val ref = FirebaseDatabase.getInstance().getReference("User")
         val profileList = ArrayList<ReadUser>()
         ref.orderByChild("userId").equalTo(idUser)
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         for (uSnapshot in snapshot.children) {
                             val data = uSnapshot.getValue(ReadUser::class.java)
                             profileList.add(data!!)
-                            Glide.with(context).load(profileList[0].userAvatar)
+                            Glide.with(activity).load(profileList[0].userAvatar)
                                 .into(imAvatar)
                             tvName.text = profileList[0].userName
                         }
@@ -305,6 +360,7 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
                         loadDate(postlist[0].dateCreate, holder.binding.tvDateCreate2)
                         Glide.with(holder.binding.root).load(postlist[0].photo)
                             .into(holder.binding.ivPhoto2)
+                        photo2 = postlist[0].photo
                     }
                 }
 

@@ -30,6 +30,17 @@ class SearchActivity : AppCompatActivity() {
         binding.rcvSearch.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
+       textWatcher()
+
+        binding.btnBack.setOnClickListener { finish() }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SearchUser(binding.edtSearch.text.toString())
+    }
+
+    private fun textWatcher() {
         binding.edtSearch.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -43,9 +54,8 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {}
 
         })
-
-        binding.btnBack.setOnClickListener { finish() }
     }
+
 
     private fun SearchUser(userName: String) {
         val profileList = ArrayList<ReadUser>()

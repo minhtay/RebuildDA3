@@ -55,9 +55,15 @@ class NofiticationAdapter(val activity: Context, val noficationList: ArrayList<R
         val idUserSend = noficationList[position].idUserSend
         val message = noficationList[position].message
         val dateCreate = noficationList[position].dateCreate
+        val status = noficationList[position].status
 
         val format = SimpleDateFormat("dd/MM/yyyy")
         holder.binding.tvDateCreate.text = format.format(dateCreate)
+        if(status== false) {
+            holder.binding.layout.setBackgroundColor(ContextCompat.getColor(activity,R.color.nofication))
+        }
+
+        mAth = FirebaseAuth.getInstance()
 
         val ref = FirebaseDatabase.getInstance().getReference("User")
         val profileList = ArrayList<ReadUser>()
@@ -82,6 +88,11 @@ class NofiticationAdapter(val activity: Context, val noficationList: ArrayList<R
 
             })
 
+        holder.binding.layout.setOnClickListener {
+            if (status==false){
+                FirebaseDatabase.getInstance().getReference("Nofication/${mAth.currentUser!!.uid}/$idNofication").child("status").setValue(true)
+            }
+        }
 
     }
 

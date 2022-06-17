@@ -479,7 +479,7 @@ class PostActivity : AppCompatActivity() {
                         for (uSnapshot in snapshot.children) {
                             val data = uSnapshot.getValue(ReadUser::class.java)
                             profileList.add(data!!)
-                            Glide.with(binding.root).load(profileList[0].userAvatar)
+                            Glide.with(applicationContext).load(profileList[0].userAvatar)
                                 .into(imvAvatar)
                             tvName.text = profileList[0].userName.toString()
 

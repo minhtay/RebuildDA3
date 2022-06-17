@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.doan3.R
 import com.example.doan3.adapter.PostAdapter
-import com.example.doan3.adapter.SearchAdapter
 import com.example.doan3.data.ReadPost
 import com.example.doan3.data.ReadUser
 import com.example.doan3.databinding.ActivityProfileBinding
@@ -27,7 +26,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileBinding
     private lateinit var fAuth: FirebaseAuth
-    private var idUser : String?=null
+    private var idUser: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,46 +36,52 @@ class ProfileActivity : AppCompatActivity() {
         idUser = intent.getStringExtra("idUser")
 
         fAuth = FirebaseAuth.getInstance()
-        LoadDataUser()
-        LoadDataPost()
-        DrawableFollow(idUser)
+        loadDataUser()
+        loadDataPost()
+        drawableFollow(idUser)
+        loadFollower()
+        loadFollowing()
 
 
-        binding.btnBack.setOnClickListener(object :View.OnClickListener{
+        binding.btnBack.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 finish()
-
             }
         })
-        if (idUser!= fAuth.currentUser!!.uid){
+        if (idUser != fAuth.currentUser!!.uid) {
             binding.btnEditProfile.visibility = View.GONE
-            binding.btnFollow.visibility =View.VISIBLE
-        }else{
+            binding.btnFollow.visibility = View.VISIBLE
+        } else {
             binding.btnFollow.visibility = View.GONE
-            binding.btnEditProfile.visibility =View.VISIBLE
+            binding.btnEditProfile.visibility = View.VISIBLE
         }
-        binding.btnEditProfile.setOnClickListener(object :View.OnClickListener{
+        binding.btnEditProfile.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                val intent = Intent(this@ProfileActivity,EditprofileActivity::class.java)
-                intent.putExtra("idUser",idUser)
+                val intent = Intent(this@ProfileActivity, EditprofileActivity::class.java)
+                intent.putExtra("idUser", idUser)
                 startActivity(intent)
-                finish()
             }
         })
 
         binding.btnFollow.setOnClickListener { Follow() }
-        LoadFollower()
-        LoadFollowing()
+
+
+    }
+    override fun onResume() {
+        super.onResume()
+            loadDataUser()
+            loadDataPost()
     }
 
-    private fun LoadFollowing() {
+    private fun loadFollowing() {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Following")
-        fDatabase.addValueEventListener(object :ValueEventListener{
+        fDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.hasChild(idUser!!)){
-                    binding.tvFollowing.text = snapshot.child(idUser!!).childrenCount.toString() + " Following"
-                }else{
-                    binding.tvFollowing.text =  " 0 Following"
+                if (snapshot.hasChild(idUser!!)) {
+                    binding.tvFollowing.text =
+                        snapshot.child(idUser!!).childrenCount.toString() + " Following"
+                } else {
+                    binding.tvFollowing.text = " 0 Following"
                 }
             }
 
@@ -86,14 +91,15 @@ class ProfileActivity : AppCompatActivity() {
         })
     }
 
-    private fun LoadFollower() {
+    private fun loadFollower() {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Follower")
-        fDatabase.addValueEventListener(object :ValueEventListener{
+        fDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.hasChild(idUser!!)){
-                    binding.tvFollow.text = snapshot.child(idUser!!).childrenCount.toString() + " Follower"
-                }else{
-                    binding.tvFollow.text =  " 0 Follower"
+                if (snapshot.hasChild(idUser!!)) {
+                    binding.tvFollow.text =
+                        snapshot.child(idUser!!).childrenCount.toString() + " Follower"
+                } else {
+                    binding.tvFollow.text = " 0 Follower"
                 }
             }
 
@@ -103,37 +109,41 @@ class ProfileActivity : AppCompatActivity() {
         })
     }
 
-    private fun LoadDataPost() {
+    private fun loadDataPost() {
+        val postList = ArrayList<ReadPost>()
         binding.rcvProfile.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         (binding.rcvProfile.layoutManager as LinearLayoutManager).reverseLayout = true
         (binding.rcvProfile.layoutManager as LinearLayoutManager).stackFromEnd = true
         binding.rcvProfile.setHasFixedSize(true)
         val fDatabase = FirebaseDatabase.getInstance().getReference("Post")
-        fDatabase.orderByChild("idUser").equalTo(idUser).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val postList = ArrayList<ReadPost>()
-                if (snapshot.exists()) {
-                    for (pSnapshot in snapshot.children) {
-                        val data = pSnapshot.getValue(ReadPost::class.java)
-                        postList.add(data!!)
+        fDatabase.orderByChild("idUser").equalTo(idUser)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (pSnapshot in snapshot.children) {
+                            val data = pSnapshot.getValue(ReadPost::class.java)
+                            postList.add(data!!)
+                        }
+                        val list = ArrayList(postList.sortedBy { it.dateCreate })
+                        binding.rcvProfile.adapter = PostAdapter(this@ProfileActivity, list)
+                        binding.tvPostNumber.text = postList.size.toString() + " Post"
+                    } else {
+                        binding.tvPostNumber.text = "0 Post"
                     }
+
                 }
-                val list = ArrayList(postList.sortedBy { it.dateCreate })
-                binding.rcvProfile.adapter = PostAdapter(this@ProfileActivity, list)
-                binding.tvPostNumber.text = list.size.toString()+" Post"
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("DataPost", error.message)
-            }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("DataPost", error.message)
+                }
 
-        })
+            })
 
 
     }
 
-    private fun LoadDataUser() {
+    private fun loadDataUser() {
         val profileList = ArrayList<ReadUser>()
         val fDatabase = FirebaseDatabase.getInstance().getReference("User")
         fDatabase.orderByChild("userId").equalTo(idUser)
@@ -147,7 +157,6 @@ class ProfileActivity : AppCompatActivity() {
                         Glide.with(applicationContext).load(profileList[0].userAvatar)
                             .into(binding.imvAvatar)
                         binding.tvFullName.text = profileList[0].userName
-                        binding.appBar.text = profileList[0].userName
                         binding.tvBio.text = profileList[0].bio
 
 
@@ -171,15 +180,20 @@ class ProfileActivity : AppCompatActivity() {
         return builder
     }
 
-    private fun DrawableFollow(idUser: String?) {
+    private fun drawableFollow(idUser: String?) {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Following")
-        fDatabase.addValueEventListener(object :ValueEventListener{
+        fDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.child(fAuth.currentUser!!.uid).hasChild(idUser!!)){
-                    binding.btnFollow.setBackgroundColor(ContextCompat.getColor(this@ProfileActivity, R.color.follow))
+                if (snapshot.child(fAuth.currentUser!!.uid).hasChild(idUser!!)) {
+                    binding.btnFollow.setBackgroundColor(
+                        ContextCompat.getColor(
+                            this@ProfileActivity,
+                            R.color.follow
+                        )
+                    )
                     binding.btnFollow.setText("Following")
                     binding.btnFollow.setTextColor(Color.WHITE)
-                }else{
+                } else {
                     binding.btnFollow.setBackgroundColor(Color.WHITE)
                     binding.btnFollow.setText("Follow")
                     binding.btnFollow.setTextColor(Color.BLACK)
@@ -193,26 +207,17 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun Follow() {
-        var like = true
         val fDatabase = FirebaseDatabase.getInstance().getReference("Following")
-        fDatabase.addValueEventListener(object :ValueEventListener{
+        fDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if(like == true){
-                    if (snapshot.child(fAuth.currentUser!!.uid).hasChild(idUser!!)){
-                        fDatabase.child(fAuth.currentUser!!.uid).child(idUser!!).removeValue()
-                        DeleteFollower()
-                        like = false
-
-                    }else{
-                        fDatabase.child(fAuth.currentUser!!.uid).child(idUser!!).setValue(true)
-                        AddFollower()
-                        like = false
-                    }
+                if (snapshot.child(fAuth.currentUser!!.uid).hasChild(idUser!!)) {
+                    fDatabase.child(fAuth.currentUser!!.uid).child(idUser!!).removeValue()
+                    DeleteFollower()
+                } else {
+                    fDatabase.child(fAuth.currentUser!!.uid).child(idUser!!).setValue(true)
+                    AddFollower()
                 }
             }
-
-
-
             override fun onCancelled(error: DatabaseError) {
             }
         })
@@ -226,17 +231,9 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun DeleteFollower() {
-        val fDatabase2 = FirebaseDatabase.getInstance().getReference("Follower")
-        fDatabase2.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.child(fAuth.currentUser!!.uid).hasChild(idUser!!)){
-                    fDatabase2.child(idUser!!).child(fAuth.currentUser!!.uid).removeValue()
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })
+        val fDatabase1 = FirebaseDatabase.getInstance().getReference("Follower")
+        fDatabase1.child(idUser!!).child(fAuth.currentUser!!.uid).removeValue()
     }
+
 
 }

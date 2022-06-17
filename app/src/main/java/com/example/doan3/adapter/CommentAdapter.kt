@@ -1,23 +1,14 @@
 package com.example.doan3.adapter
 
+import android.app.Dialog
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Build
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
-import android.text.style.RelativeSizeSpan
-import android.text.style.StyleSpan
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
+import android.view.*
 import android.widget.PopupMenu
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.doan3.R
@@ -33,7 +24,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 
-class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadCommennt>) :
+class CommentAdapter(val activity: Context, val commentList: ArrayList<ReadCommennt>) :
     RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
     private lateinit var mAth: FirebaseAuth
@@ -93,14 +84,14 @@ class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadComm
         val format = SimpleDateFormat("MM/dd/yyyy")
         holder.binding.tvDateCreate.text = format.format(dateCreate)
 
-        if (idUser!=mAth.currentUser!!.uid){
+        if (idUser != mAth.currentUser!!.uid) {
             holder.binding.btnMenu.isEnabled = false
             holder.binding.btnMenu.setImageResource(0)
         }
         holder.binding.btnMenu.setOnClickListener(object : View.OnClickListener {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onClick(p0: View?) {
-                val popupMenu = PopupMenu(holder.binding.root.context,holder.binding.btnMenu )
+                val popupMenu = PopupMenu(holder.binding.root.context, holder.binding.btnMenu)
                 popupMenu.setOnMenuItemClickListener {
                     when (it.itemId) {
                         R.id.delete -> {
@@ -116,20 +107,18 @@ class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadComm
 
                         }
                         R.id.edit -> {
-                            if (mAth.currentUser!!.uid == idUser) {
-                                holder.binding.linearLayout3.visibility = View.GONE
-                                holder.binding.btnMenu.visibility = View.GONE
-                                holder.binding.constraint1.visibility = View.VISIBLE
-                                holder.binding.btnEditComent.visibility = View.VISIBLE
-                                holder.binding.btnCancel.visibility = View.VISIBLE
-                                holder.binding.edtEditComment.setText(comment)
-                            } else {
-                                Snackbar.make(
-                                    holder.binding.root,
-                                    "You cannot delete comments",
-                                    Snackbar.LENGTH_SHORT
-                                ).show()
-                            }
+                            /* holder.binding.linearLayout3.visibility = View.GONE
+                             holder.binding.btnMenu.visibility = View.GONE
+                             holder.binding.constraint1.visibility = View.VISIBLE
+                             holder.binding.btnUpdate.visibility = View.VISIBLE
+                             holder.binding.btnCancel.visibility = View.VISIBLE
+                             holder.binding.edtEditComment.setText(comment)*/
+                            holder.binding.layoutBtnEdit.visibility = View.VISIBLE
+                            holder.binding.edtEditComment.visibility = View.VISIBLE
+                            holder.binding.tvComent.visibility = View.GONE
+                            holder.binding.tvUserName.visibility = View.GONE
+                            holder.binding.btnMenu.visibility = View.GONE
+                            holder.binding.edtEditComment.setText(comment)
 
                         }
                     }
@@ -142,20 +131,22 @@ class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadComm
             }
         })
 
-        holder.binding.btnEditComent.setOnClickListener(object : View.OnClickListener {
+        holder.binding.btnUpdate.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
+                val text = holder.binding.edtEditComment.text.toString()
                 if (holder.binding.edtEditComment.text.length > 0) {
                     val eDatabase = FirebaseDatabase.getInstance().getReference("Comment")
                     eDatabase.child(idPost!!).child(idComment!!).child("comment")
-                        .setValue(holder.binding.edtEditComment.text.toString())
+                        .setValue(text)
                         .addOnSuccessListener {
-                            Snackbar.make(
-                                holder.binding.root,
-                                "Update comment successfully",
-                                Snackbar.LENGTH_SHORT
-                            ).show()
-                            Utils.hideSoftKeyboard(activity,holder.binding.root)
-                            LayoutDefault(holder)
+                            dialogSuccess()
+                            Utils.hideSoftKeyboard(activity, holder.binding.root)
+                            holder.binding.layoutBtnEdit.visibility = View.GONE
+                            holder.binding.edtEditComment.visibility = View.GONE
+                            holder.binding.tvComent.visibility = View.VISIBLE
+                            holder.binding.tvUserName.visibility = View.VISIBLE
+                            holder.binding.tvComent.setText(text)
+
                         }
                 } else {
                     Snackbar.make(
@@ -167,17 +158,14 @@ class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadComm
             }
         })
 
-        holder.binding.btnCancel.setOnClickListener { LayoutDefault(holder) }
-    }
+        holder.binding.btnCancel.setOnClickListener {
+            holder.binding.layoutBtnEdit.visibility = View.GONE
+            holder.binding.btnMenu.visibility = View.GONE
+            holder.binding.edtEditComment.visibility = View.GONE
+            holder.binding.tvComent.visibility = View.VISIBLE
+            holder.binding.tvUserName.visibility = View.VISIBLE
 
-
-
-    private fun LayoutDefault(holder: CommentAdapter.ViewHolder) {
-        holder.binding.linearLayout3.visibility = View.VISIBLE
-        holder.binding.btnMenu.visibility = View.VISIBLE
-        holder.binding.constraint1.visibility = View.GONE
-        holder.binding.btnEditComent.visibility = View.GONE
-        holder.binding.btnCancel.visibility = View.GONE
+        }
     }
 
     private fun buildDialog(
@@ -208,9 +196,20 @@ class CommentAdapter (val activity: Context, val commentList: ArrayList<ReadComm
                 }
             })
         }
-        builder.setNeutralButton("Cancel"){ dialog, which ->}
+        builder.setNeutralButton("Cancel") { dialog, which -> }
 
         return builder
+    }
+
+    private fun dialogSuccess() {
+        val diaolog = Dialog(activity)
+        diaolog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        diaolog.setContentView(R.layout.dialog_success)
+        diaolog.setCancelable(true)
+        val view = diaolog.findViewById<ConstraintLayout>(R.id.layoutDialog)
+        view.setOnClickListener { diaolog.dismiss() }
+        diaolog.show()
+        Log.d("Resut", "share finish")
     }
 
 }

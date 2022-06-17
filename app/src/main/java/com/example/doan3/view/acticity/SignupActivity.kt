@@ -101,7 +101,7 @@ class SignupActivity : AppCompatActivity() {
             val uAvatar =
                 "https://firebasestorage.googleapis.com/v0/b/doan3-24d93.appspot.com/o/avatar-default.png?alt=media&token=b8606c4c-ac02-48e7-a8b6-3bcc93bf098d"
             val data =
-                UpUserData(ServerValue.TIMESTAMP, ServerValue.TIMESTAMP, uId, uName, uAvatar, email,null)
+                UpUserData(ServerValue.TIMESTAMP, ServerValue.TIMESTAMP, uId, uName, uAvatar, email,"123")
             val ref = FirebaseDatabase.getInstance().getReference("User")
             ref.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {

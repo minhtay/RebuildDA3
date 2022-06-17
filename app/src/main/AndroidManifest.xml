@@ -21,6 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DoAn3">
         <activity
+            android:name=".view.acticity.NoficationActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.acticity.EditprofileActivity"
             android:exported="false" />
         <activity
@@ -46,7 +49,9 @@
             android:exported="false" />
         <activity
             android:name=".view.acticity.SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.RemoveSplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

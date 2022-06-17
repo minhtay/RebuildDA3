@@ -1,6 +1,5 @@
 package com.example.doan3.view.acticity
 
-import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,26 +9,19 @@ import com.bumptech.glide.Glide
 import com.example.doan3.data.ReadUser
 import com.example.doan3.data.UpUserData
 import com.example.doan3.databinding.ActivityEditprofileBinding
+import com.example.doan3.util.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import gun0912.tedimagepicker.builder.TedImagePicker
-import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.concurrent.timerTask
 
 class EditprofileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditprofileBinding
-    private lateinit var fAuth : FirebaseAuth
+    private lateinit var fAuth: FirebaseAuth
     private var filePath: Uri? = null
-    private var urlImage: String? = null
-    private var email: String? = null
-    private var avatar: String? = null
-    private var bio: String? = null
-
-
+    private lateinit var profileList: ArrayList<ReadUser>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,37 +31,37 @@ class EditprofileActivity : AppCompatActivity() {
 
         fAuth = FirebaseAuth.getInstance()
 
-        LoadProfile()
+        loadProfile()
 
-        binding.btnBack.setOnClickListener { buildDialog()!!.show() }
-        binding.btnPickAvatar.setOnClickListener { PickAvatar() }
-        binding.btnUpdate.setOnClickListener { DeleteAvatar() }
+        binding.btnBack.setOnClickListener { finish() }
+        binding.btnPickAvatar.setOnClickListener { pickAvatar() }
+        binding.btnUpdate.setOnClickListener {
+            updateProfile()
+        }
     }
 
-    private fun LoadProfile() {
-        val profileList = ArrayList<ReadUser>()
+    private fun loadProfile() {
+        profileList = ArrayList<ReadUser>()
         val fDatabase = FirebaseDatabase.getInstance().getReference("User")
         fDatabase.orderByChild("userId").equalTo(fAuth.currentUser!!.uid)
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         for (uSnapshot in snapshot.children) {
                             val data = uSnapshot.getValue(ReadUser::class.java)
                             profileList.add(data!!)
                         }
-                        avatar = profileList[0].userAvatar
-                        Glide.with(this@EditprofileActivity).load(profileList[0].userAvatar)
+                        Glide.with(applicationContext).load(profileList[0].userAvatar)
                             .into(binding.imvAvatar)
                         binding.edtUserName.setText(profileList[0].userName)
-                        bio = profileList[0].bio
-                        binding.edtBio.setText(bio)
-
+                        if (profileList[0].bio != null) {
+                            binding.edtBio.setText(profileList[0].userName)
+                        }
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    buildDialogError(
-                        tittle = "Error",
+                    "Error".buildDialogError(
                         mess = "An error has occurred during data processing. Please exit and restart the app"
                     )
                 }
@@ -77,76 +69,122 @@ class EditprofileActivity : AppCompatActivity() {
             })
     }
 
-    private fun DeleteAvatar() {
-        if (filePath==null){
-            uploadData(avatar!!)
-        }else{
-        val fStorage = FirebaseStorage.getInstance().getReference("User")
-        fStorage.child(fAuth.currentUser!!.uid).delete().addOnSuccessListener{
-            UploadImage()
-        }}
-    }
-
-    private fun PickAvatar() {
-        TedImagePicker.with(this).start { uri ->
-            Glide.with(this).load(uri).into(binding.imvAvatar)
-            filePath = uri
+    override fun onDestroy() {
+        super.onDestroy()
+        if (!this.isDestroyed()) {
+            Glide.with(this@EditprofileActivity).pauseRequests()
         }
     }
-    private fun UploadImage() {
-        val fStorage = FirebaseStorage.getInstance().getReference("User/${fAuth.currentUser!!.uid}")
-        fStorage.putFile(filePath!!).addOnSuccessListener {
-            fStorage.downloadUrl.addOnSuccessListener {
-                urlImage  = it.toString()
-                Log.d("dowloadUrlImage", "Dowload url image success")
-                uploadData( urlImage!!)
-            }.addOnFailureListener {
-                Log.e("dowloadUrlImage", "Dowload url image failure : $it " )
-                buildDialogError(
-                    tittle = "Error",
-                    mess = "There was an error while posting. Please try again later"
-                )
 
+    private fun updateProfile() {
+        /*if (filePath != null) {
+            val fStorage =
+                FirebaseStorage.getInstance().getReference("User/${fAuth.currentUser!!.uid}")
+            fStorage.putFile(filePath!!).addOnSuccessListener {
+                fStorage.downloadUrl.addOnSuccessListener {
+                    FirebaseDatabase.getInstance().getReference("User/${fAuth.currentUser!!.uid}")
+                        .child("userAvatar").setValue(it.toString())
+                }
+            }
+        }
+        if (userName!=binding.edtUserName.text.toString()&&binding.edtUserName.text.isNotEmpty()){
+            FirebaseDatabase.getInstance().getReference("User/${fAuth.currentUser!!.uid}")
+                .child("userName").setValue(binding.edtUserName.text).addOnSuccessListener {
+                    binding.edtUserName.clearFocus()
+                    Utils.hideSoftKeyboard(this, binding.root)
+                }
+        }
+        if (bio!=null){
+            if (binding.edtBio.text.isNotEmpty()&&binding.edtBio.text.toString() != bio){
+                FirebaseDatabase.getInstance().getReference("User/${fAuth.currentUser!!.uid}")
+                    .child("bio").setValue(binding.edtBio.text).addOnSuccessListener {
+                        binding.edtBio.clearFocus()
+                        Utils.hideSoftKeyboard(this, binding.root)
+                    }
+            }
+        }else{
+            if (binding.edtBio.text.isNotEmpty()){
+                FirebaseDatabase.getInstance().getReference("User/${fAuth.currentUser!!.uid}")
+                    .child("bio").setValue(binding.edtBio.text).addOnSuccessListener {
+                        binding.edtBio.clearFocus()
+                        Utils.hideSoftKeyboard(this, binding.root)
+                    }
+            }else
+        }*/
+        if (filePath != null) {
+            val fStorage =
+                FirebaseStorage.getInstance().getReference("User/${fAuth.currentUser!!.uid}")
+            fStorage.putFile(filePath!!).addOnSuccessListener {
+                fStorage.downloadUrl.addOnSuccessListener {
+                    val avatar = it.toString()
+                    updateName(avatar)
+                }
+            }
+        } else updateName(profileList[0].userAvatar.toString())
+
+
+    }
+
+    private fun updateName(avatar: String) {
+        if (profileList[0].userName != binding.edtUserName.text.toString() && binding.edtUserName.text.isNotEmpty()) {
+            val name = binding.edtUserName.text.toString()
+            binding.edtUserName.clearFocus()
+            Utils.hideSoftKeyboard(this, binding.root)
+            updateBio(avatar, name)
+        } else {
+
+        }
+    }
+
+    private fun updateBio(avatar: String, name: String) {
+        if (profileList[0].bio != null) {
+            if (profileList[0].bio != binding.edtBio.text.toString() && binding.edtBio.text.isNotEmpty()) {
+                val data = UpUserData(
+                    ServerValue.TIMESTAMP,
+                    ServerValue.TIMESTAMP,
+                    profileList[0].userId,
+                    name,
+                    avatar,
+                    profileList[0].userEmail,
+                    binding.edtBio.text.toString()
+                )
+                Upload(data)
+            }
+        } else {
+            if (binding.edtBio.text.isNotEmpty()) {
+                val data = UpUserData(
+                    ServerValue.TIMESTAMP,
+                    ServerValue.TIMESTAMP,
+                    profileList[0].userId,
+                    name,
+                    avatar,
+                    profileList[0].userEmail,
+                    binding.edtBio.text.toString()
+                )
+                Upload(data)
             }
         }
     }
 
-    private fun uploadData(avatar:String) {
-        bio = binding.edtBio.text.toString()
-        val data =
-        UpUserData(ServerValue.TIMESTAMP, ServerValue.TIMESTAMP, fAuth.currentUser!!.uid, binding.edtUserName.text.toString(), avatar,bio)
-        val ref = FirebaseDatabase.getInstance().getReference("User")
-        ref.child(fAuth.currentUser!!.uid).setValue(data!!).addOnSuccessListener{
-            Snackbar.make(
-                binding.root,
-                "Successfully update profile",
-                Snackbar.LENGTH_LONG
-            ).show()
-            binding.edtBio.setText(bio)
-            val intent = Intent(this,ProfileActivity::class.java)
-            Timer().schedule(timerTask { // hàm delay time chuyển màn hình
-                intent.putExtra("idUser",fAuth.currentUser!!.uid)
-                startActivity(intent)
-                finish()
-            },1500 )
+    private fun Upload(data: UpUserData) {
+        FirebaseDatabase.getInstance().getReference("User/${fAuth.currentUser!!.uid}")
+            .setValue(data).addOnSuccessListener {
+                Snackbar.make(binding.root,"Update success",Snackbar.LENGTH_SHORT).show()
         }
     }
 
-    private fun buildDialogError(tittle: String, mess: String): AlertDialog.Builder {
-        val builder = AlertDialog.Builder(binding.root.context)
-        builder.setTitle(tittle)
-        builder.setMessage(mess)//đang xảy ra lỗi trong quá trình xử lí dữ liệu. vui lòng thoát và khởi động lại app
-        return builder
+    private fun pickAvatar() {
+        TedImagePicker.with(this).start { uri ->
+            Glide.with(this).load(uri).into(binding.imvAvatar)
+            filePath = uri
+            Log.d("editprofile", "uri: $filePath")
+        }
     }
 
-    private fun buildDialog(): AlertDialog.Builder? {
+    private fun String.buildDialogError(mess: String): AlertDialog.Builder {
         val builder = AlertDialog.Builder(binding.root.context)
-        builder.setTitle("Quit")
-        builder.setMessage("Are you sure, do you want to quit?")//Bạn có chắc chắn, bạn có muốn đăng xuất không?
-        builder.setPositiveButton("Quit") { dialog, which ->
-            finish()
-        }
-        builder.setNeutralButton("Cancel") { dialog, which -> }
+        builder.setTitle(this)
+        builder.setMessage(mess)
         return builder
     }
 }
