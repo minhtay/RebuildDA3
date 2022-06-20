@@ -29,7 +29,6 @@ import com.example.doan3.view.acticity.PostActivity
 import com.example.doan3.view.acticity.SharePostActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.ortiz.touchview.TouchImageView
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,7 +40,6 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
     RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     private lateinit var mAuth: FirebaseAuth
-    private var photo2 : String? = null
 
 
     class ViewHolder(val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root)
@@ -60,11 +58,6 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
         return postList.size
     }
 
-    fun clear() {
-        postList.clear()
-        notifyDataSetChanged()
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         mAuth = FirebaseAuth.getInstance()
@@ -79,7 +72,9 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
         val dateCreate = postList[position].dateCreate
         val dateUpdate = postList[position].dateUpdate
 
-        loadUser(holder.binding.root, idUser, holder.binding.imvAvatar, holder.binding.tvName)
+        var photoShare = ""
+
+        loadUser( idUser, holder.binding.imvAvatar, holder.binding.tvName)
 
         // chuyển đổi và hiển thị dateCreate*/
         this.loadDate(dateCreate, holder.binding.tvDateCreate)
@@ -118,43 +113,25 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
             intent.putExtra("dateUpdate", dateUpdate.toString())
             holder.binding.root.context.startActivity(intent)
         }
-
-        holder.binding.imPhoto.setOnClickListener {
-            holder.binding.tvTitle.setOnClickListener {
-                val intent = Intent(holder.binding.root.context, PostActivity::class.java)
-                intent.putExtra("idPost", idPost)
-                intent.putExtra("typePost", typePost)
-                intent.putExtra("idShare", idShare)
-                intent.putExtra("idUser", idUser)
-                intent.putExtra("title", title)
-                intent.putExtra("photo", photo)
-                intent.putExtra("dateCreate", dateCreate.toString())
-                intent.putExtra("dateUpdate", dateUpdate.toString())
-                holder.binding.root.context.startActivity(intent)
-            }
-        }
-
         holder.binding.imPhoto.setOnClickListener {
             val builder =
                 Dialog(activity, android.R.style.Theme_Material_NoActionBar_Fullscreen)
-            builder.setContentView(com.example.doan3.R.layout.dialog_image_view)
-            val image = builder.findViewById<TouchImageView>(com.example.doan3.R.id.imageView)
-            val url: String = photo.toString()
+            builder.setContentView(R.layout.dialog_image_view)
             Glide.with(builder.context).load(photo.toString())
-                .into(builder.findViewById(com.example.doan3.R.id.imageView))
+                .into(builder.findViewById(R.id.imageView))
             builder.setCancelable(true)
             builder.setCanceledOnTouchOutside(false)
             builder.show()
         }
 
         holder.binding.ivPhoto2.setOnClickListener {
+
             val builder =
-                Dialog(activity, android.R.style.Theme_Material_NoActionBar_Fullscreen)
-            builder.setContentView(com.example.doan3.R.layout.dialog_image_view)
-            val image = builder.findViewById<TouchImageView>(com.example.doan3.R.id.imageView)
-            val url: String = photo.toString()
-            Glide.with(builder.context).load(photo2.toString())
-                .into(builder.findViewById(com.example.doan3.R.id.imageView))
+                Dialog(activity, android.R.style.Theme_Material_NoActionBar_Fullscreen).also {
+                    it.setContentView(R.layout.dialog_image_view)
+                }
+            Glide.with(builder.context).load(photoShare.toString())
+                .into(builder.findViewById(R.id.imageView))
             builder.setCancelable(true)
             builder.setCanceledOnTouchOutside(false)
             builder.show()
@@ -166,9 +143,9 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
             fDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.child(idPost!!).hasChild(mAuth.currentUser?.uid!!)) {
-                        fDatabase.child(idPost!!).child(mAuth.currentUser!!.uid).removeValue()
+                        fDatabase.child(idPost).child(mAuth.currentUser!!.uid).removeValue()
                     } else {
-                        fDatabase.child(idPost!!).child(mAuth.currentUser!!.uid)
+                        fDatabase.child(idPost).child(mAuth.currentUser!!.uid)
                             .setValue(true)
                         uploadNofication("liked your post", idUser!!)
                     }
@@ -202,7 +179,35 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
         } else {
             "Shared a post".also { holder.binding.tvTypePost.text = it }
             holder.binding.tvTitle.text = title
-            loadPostShare(holder, idShare)
+            val ref = FirebaseDatabase.getInstance().getReference("Post")
+            val postlist1 = ArrayList<ReadPost>()
+            ref.orderByChild("idPost").equalTo(idShare)
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            for (uSnapshot in snapshot.children) {
+                                val data = uSnapshot.getValue(ReadPost::class.java)
+                                postlist1.add(data!!)
+                                photoShare = postlist1[0].photo.toString()
+                                loadUser(
+                                    postlist1[0].idUser,
+                                    holder.binding.imvAvatar2,
+                                    holder.binding.tvName2
+                                )
+
+                            }
+                            holder.binding.tvTitle2.text = postlist1[0].title
+                            loadDate(postlist1[0].dateCreate, holder.binding.tvDateCreate2)
+                            Glide.with(holder.binding.root).load(postlist1[0].photo)
+                                .into(holder.binding.ivPhoto2)
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.d("DatabaseError", error.message)
+                    }
+
+                })
         }
 
         holder.binding.btnShare.setOnClickListener {
@@ -223,7 +228,7 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
                                 ServerValue.TIMESTAMP,
                                 ServerValue.TIMESTAMP
                             ).apply {
-                                shareNow(holder.binding.root, id, this)
+                                shareNow( id, this)
                             }
                             uploadNofication("shared your post", idUser!!)
 
@@ -238,7 +243,7 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
                                 ServerValue.TIMESTAMP,
                                 ServerValue.TIMESTAMP
                             ).apply {
-                                shareNow(holder.binding.root, id, this)
+                                shareNow( id, this)
                             }
 
                         }
@@ -267,7 +272,7 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.delete -> {
-                        buildDialog(holder.binding.root, idPost, typePost)?.show()
+                        buildDialog(holder.binding.root, idPost, typePost).show()
                     }
 
                     R.id.favorite -> {}
@@ -288,7 +293,6 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
     }
 
     private fun loadUser(
-        context: ConstraintLayout,
         idUser: String?,
         imAvatar: CircleImageView,
         tvName: TextView
@@ -316,7 +320,7 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
             })
     }
 
-    private fun shareNow(holder: ConstraintLayout, id: String, data: UploadPost) {
+    private fun shareNow( id: String, data: UploadPost) {
         val ref = FirebaseDatabase.getInstance().getReference("Post")
         ref.child(id).setValue(data).addOnSuccessListener {
             Log.d("Resut", "share resuft")
@@ -336,40 +340,6 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
         view.setOnClickListener { diaolog.dismiss() }
         diaolog.show()
         Log.d("Resut", "share finish")
-    }
-
-    private fun loadPostShare(holder: ViewHolder, idShare: String?) {
-        val ref = FirebaseDatabase.getInstance().getReference("Post")
-        val postlist = ArrayList<ReadPost>()
-        ref.orderByChild("idPost").equalTo(idShare)
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        for (uSnapshot in snapshot.children) {
-                            val data = uSnapshot.getValue(ReadPost::class.java)
-                            postlist.add(data!!)
-                            loadUser(
-                                holder.binding.root,
-                                postlist[0].idUser,
-                                holder.binding.imvAvatar2,
-                                holder.binding.tvName2
-                            )
-
-                        }
-                        holder.binding.tvTitle2.text = postlist[0].title
-                        loadDate(postlist[0].dateCreate, holder.binding.tvDateCreate2)
-                        Glide.with(holder.binding.root).load(postlist[0].photo)
-                            .into(holder.binding.ivPhoto2)
-                        photo2 = postlist[0].photo
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.d("DatabaseError", error.message)
-                }
-
-            })
-
     }
 
     private fun loadDate(dateCreate: Long?, tvDateCreate: TextView) {
@@ -446,16 +416,17 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
         NoficationClass().UpNofication(data)
     }
 
-    private fun buildDialog(context: ConstraintLayout, idPost: String?, typePost: String?): AlertDialog.Builder? {
+    private fun buildDialog(context: ConstraintLayout, idPost: String?, typePost: String?): AlertDialog.Builder {
         val builder = AlertDialog.Builder(context.context)
         builder.setTitle("Delete post ")
         builder.setMessage("Are you sure you want to delete the post?")
-        builder.setPositiveButton("Delete") { dialog, which ->
+        builder.setPositiveButton("Delete") { _, _ ->
             if (typePost=="Post"){
                 deletePost(idPost)
             }else deletePostShare(idPost)
         }
-        builder.setNeutralButton("Cancel") { dialog, which -> }
+        builder.setNeutralButton("Cancel") { _, _ ->
+        }
         return builder
     }
 
@@ -466,8 +437,8 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
                 if (snapshot.hasChild(idPost!!)) {
                     Log.d("Delete post", "post")
                     fdata.child(idPost).removeValue().addOnSuccessListener {
-                        deleteComment(idPost)
-                        deleteLike(idPost)
+                        idPost.deleteComment()
+                        idPost.deleteLike()
                         deleteSharePost(idPost)
                         dialogSuccess()
                     }
@@ -503,8 +474,8 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
     private fun deleteShare(id: String) {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Post")
         fDatabase.child(id).removeValue().addOnSuccessListener {
-            deleteComment(id)
-            deleteLike(id)
+            id.deleteComment()
+            id.deleteLike()
         }
     }
 
@@ -515,8 +486,8 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
                 if (snapshot.hasChild(idPost!!)) {
                     Log.d("Delete post", "post")
                     fdata.child(idPost).removeValue().addOnSuccessListener {
-                        deleteComment(idPost)
-                        deleteLike(idPost)
+                        idPost.deleteComment()
+                        idPost.deleteLike()
                         dialogSuccess()
                     }
                 }
@@ -529,16 +500,16 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
         })
     }
 
-    private fun deleteLike(idPost: String) {
+    private fun String.deleteLike() {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Like")
-        fDatabase.child(idPost!!).removeValue().addOnSuccessListener {
+        fDatabase.child(this).removeValue().addOnSuccessListener {
             Log.d("delete like", "success")
         }
     }
 
-    private fun deleteComment(idPost: String) {
+    private fun String.deleteComment() {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Comment")
-        fDatabase.child(idPost!!).removeValue().addOnSuccessListener {
+        fDatabase.child(this).removeValue().addOnSuccessListener {
             Log.d("delete comment", "success")
         }
     }
