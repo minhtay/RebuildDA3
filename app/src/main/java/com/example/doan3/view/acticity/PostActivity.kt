@@ -18,7 +18,7 @@ import com.example.doan3.R
 import com.example.doan3.adapter.CommentAdapter
 import com.example.doan3.data.*
 import com.example.doan3.databinding.ActivityPostBinding
-import com.example.doan3.util.NoficationClass
+import com.example.doan3.model.NoficationClass
 import com.example.doan3.util.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -119,10 +119,10 @@ class PostActivity : AppCompatActivity() {
         cDatabase.child(idPost!!).orderByChild("dateCreate")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val commentList = ArrayList<ReadCommennt>()
+                    val commentList = ArrayList<readCommennt>()
                     if (snapshot.exists()) {
                         for (pSnapshot in snapshot.children) {
-                            val data = pSnapshot.getValue(ReadCommennt::class.java)
+                            val data = pSnapshot.getValue(readCommennt::class.java)
                             commentList.add(data!!)
                         }
                     }

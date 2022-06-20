@@ -12,6 +12,7 @@
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_comment.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_editprofile.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_login.xml" value="0.25" />
+        <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_login_api.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_nofication.xml" value="0.25" />
         <entry key="..\:/Android Project/rebuildDA3/DoAn3/app/src/main/res/layout/activity_post.xml" value="0.264" />
@@ -59,7 +60,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_16_PREVIEW" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

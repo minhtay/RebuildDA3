@@ -23,7 +23,7 @@ import com.example.doan3.data.ReadUser
 import com.example.doan3.data.UpNofication
 import com.example.doan3.data.UploadPost
 import com.example.doan3.databinding.ItemPostBinding
-import com.example.doan3.util.NoficationClass
+import com.example.doan3.model.NoficationClass
 import com.example.doan3.view.acticity.CommentActivity
 import com.example.doan3.view.acticity.PostActivity
 import com.example.doan3.view.acticity.SharePostActivity

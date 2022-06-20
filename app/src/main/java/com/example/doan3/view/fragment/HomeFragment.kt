@@ -144,7 +144,7 @@ class HomeFragment : Fragment() {
                             userList.add(data!!)
                         }
                     }
-                    Glide.with(requireActivity().applicationContext).load(userList[0].userAvatar)
+                    Glide.with(this@HomeFragment).load(userList[0].userAvatar)
                         .into(binding.imgAvatar)
                     binding.tvName.text = userList[0].userName
                 }

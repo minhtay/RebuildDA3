@@ -6,13 +6,12 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.example.doan3.R
 import com.example.doan3.data.ReadPost
 import com.example.doan3.data.ReadUser
 import com.example.doan3.data.UpNofication
 import com.example.doan3.data.UploadPost
 import com.example.doan3.databinding.ActivitySharePostBinding
-import com.example.doan3.util.NoficationClass
+import com.example.doan3.model.NoficationClass
 import com.example.doan3.util.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth

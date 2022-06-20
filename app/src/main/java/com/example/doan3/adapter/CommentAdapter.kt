@@ -12,7 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.doan3.R
-import com.example.doan3.data.ReadCommennt
+import com.example.doan3.data.readCommennt
 import com.example.doan3.data.ReadUser
 import com.example.doan3.databinding.ItemCommentBinding
 import com.example.doan3.util.Utils
@@ -24,7 +24,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 
-class CommentAdapter(val activity: Context, val commentList: ArrayList<ReadCommennt>) :
+class CommentAdapter(val activity: Context, val commentList: ArrayList<readCommennt>) :
     RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
     private lateinit var mAth: FirebaseAuth

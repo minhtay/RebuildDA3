@@ -1,4 +1,4 @@
-package com.example.doan3.util
+package com.example.doan3.model
 
 import com.example.doan3.data.UpNofication
 import com.google.firebase.database.FirebaseDatabase

@@ -7,12 +7,12 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.doan3.adapter.CommentAdapter
-import com.example.doan3.data.ReadCommennt
 import com.example.doan3.data.ReadUser
+import com.example.doan3.data.readCommennt
 import com.example.doan3.data.UpComment
 import com.example.doan3.data.UpNofication
 import com.example.doan3.databinding.ActivityCommentBinding
-import com.example.doan3.util.NoficationClass
+import com.example.doan3.model.NoficationClass
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -31,6 +31,7 @@ class CommentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCommentBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
         mAuth = FirebaseAuth.getInstance()
         uID = intent.getStringExtra("idUser")
@@ -56,7 +57,6 @@ class CommentActivity : AppCompatActivity() {
                 }
 
             })
-
 
         idPost = intent.getStringExtra("idPost")
         binding.btnPostComment.setOnClickListener(object : View.OnClickListener {
@@ -107,10 +107,10 @@ class CommentActivity : AppCompatActivity() {
         val fDatabase = FirebaseDatabase.getInstance().getReference("Comment")
         fDatabase.child(idPost!!).orderByChild("dateCreate").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val commentList = ArrayList<ReadCommennt>()
+                val commentList = ArrayList<readCommennt>()
                 if (snapshot.exists()) {
                     for (pSnapshot in snapshot.children) {
-                        val data = pSnapshot.getValue(ReadCommennt::class.java)
+                        val data = pSnapshot.getValue(readCommennt::class.java)
                         commentList.add(data!!)
                     }
                 }
