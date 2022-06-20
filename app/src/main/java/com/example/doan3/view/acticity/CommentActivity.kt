@@ -13,8 +13,10 @@ import com.example.doan3.data.UpComment
 import com.example.doan3.data.UpNofication
 import com.example.doan3.databinding.ActivityCommentBinding
 import com.example.doan3.model.NoficationClass
+import com.example.doan3.util.Auth
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -22,9 +24,10 @@ import kotlin.collections.ArrayList
 class CommentActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCommentBinding
-    private lateinit var mAuth: FirebaseAuth
+    /*private lateinit var mAuth: FirebaseAuth*/
     private var idPost: String? = null
     private var uID: String? = null
+    private lateinit var currentuser :FirebaseAuth
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,13 +36,16 @@ class CommentActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        mAuth = FirebaseAuth.getInstance()
+       /* mAuth = FirebaseAuth.getInstance()*/
+       /* mAuth = FirebaseAuth.getInstance()*/
+        val mAuth = Auth.auth()
         uID = intent.getStringExtra("idUser")
         binding.btnBack.setOnClickListener { finish() }
 
+
         val ref = FirebaseDatabase.getInstance().getReference("User")
         val profileList = ArrayList<ReadUser>()
-        ref.orderByChild("userId").equalTo(mAuth.currentUser!!.uid)
+        ref.orderByChild("userId").equalTo(mAuth!!.uid)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
@@ -66,7 +72,7 @@ class CommentActivity : AppCompatActivity() {
                     val data = UpComment(
                         id,
                         idPost,
-                        mAuth.currentUser!!.uid,
+                        mAuth!!.uid,
                         binding.edtComment.text.toString(),
                         ServerValue.TIMESTAMP,
                         ServerValue.TIMESTAMP
@@ -82,7 +88,7 @@ class CommentActivity : AppCompatActivity() {
                         com.example.doan3.util.Utils.hideSoftKeyboard(this@CommentActivity,binding.root)
                         binding.edtComment.text.clear()
                         binding.edtComment.clearFocus()
-                        Nofication()
+                        Nofication(mAuth)
                     }.addOnFailureListener {
                         Snackbar.make(
                             binding.root,
@@ -126,9 +132,9 @@ class CommentActivity : AppCompatActivity() {
 
     }
 
-    private fun Nofication() {
+    private fun Nofication(mAuth: FirebaseUser) {
         val id = UUID.randomUUID().toString()
-        val data = UpNofication(id,uID,mAuth.currentUser!!.uid,"commented your post",false,"Comment",ServerValue.TIMESTAMP,ServerValue.TIMESTAMP)
+        val data = UpNofication(id,uID,mAuth!!.uid,"commented your post",false,"Comment",ServerValue.TIMESTAMP,ServerValue.TIMESTAMP)
         NoficationClass().UpNofication(data)
     }
 
