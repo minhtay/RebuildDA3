@@ -485,12 +485,12 @@ class PostActivity : AppCompatActivity() {
                     (snapshot.child(idPost).childrenCount.toString() + " Like").also {
                         binding.tvLikeNumber.text = it
                     }
-                    binding.imgLike.setImageResource(R.drawable.ic_like_red)
+                    binding.imgLike.setImageResource(R.drawable.ic_heart_on)
                 } else {
                     (snapshot.child(idPost).childrenCount.toString() + " Like").also {
                         binding.tvLikeNumber.text = it
                     }
-                    binding.imgLike.setImageResource(R.drawable.ic_like)
+                    binding.imgLike.setImageResource(R.drawable.ic_heart_off)
                 }
             }
 

@@ -355,12 +355,12 @@ class PostAdapter(val activity: Context, private val postList: ArrayList<ReadPos
                     (snapshot.child(idPost).childrenCount.toString() + " Like").also {
                         tvLikeNumber.text = it
                     }
-                    like.setImageResource(R.drawable.ic_like_red)
+                    like.setImageResource(R.drawable.ic_heart_on)
                 } else {
                     (snapshot.child(idPost).childrenCount.toString() + " Like").also {
                         tvLikeNumber.text = it
                     }
-                    like.setImageResource(R.drawable.ic_like)
+                    like.setImageResource(R.drawable.ic_heart_off)
                 }
             }
 

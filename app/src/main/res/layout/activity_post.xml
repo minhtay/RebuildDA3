@@ -421,7 +421,7 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="10dp"
                         android:contentDescription="@string/todo"
-                        android:src="@drawable/ic_like"
+                        android:src="@drawable/ic_heart_off"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

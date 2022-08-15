@@ -54,6 +54,12 @@
         <entry key="..\:/Android/RebuildDA3/app/src/main/res/drawable/border_edt.xml" value="0.2185" />
         <entry key="..\:/Android/RebuildDA3/app/src/main/res/drawable/border_layout.xml" value="0.2185" />
         <entry key="..\:/Android/RebuildDA3/app/src/main/res/drawable/border_layout_cmt.xml" value="0.1935" />
+        <entry key="..\:/Android/RebuildDA3/app/src/main/res/drawable/ic_cards_heart.xml" value="0.1815" />
+        <entry key="..\:/Android/RebuildDA3/app/src/main/res/drawable/ic_cards_heart_outline.xml" value="0.1815" />
+        <entry key="..\:/Android/RebuildDA3/app/src/main/res/drawable/ic_comment.xml" value="0.121" />
+        <entry key="..\:/Android/RebuildDA3/app/src/main/res/drawable/ic_following.xml" value="0.1815" />
+        <entry key="..\:/Android/RebuildDA3/app/src/main/res/drawable/ic_heart_off.xml" value="0.121" />
+        <entry key="..\:/Android/RebuildDA3/app/src/main/res/drawable/ic_share.xml" value="0.1815" />
         <entry key="..\:/Android/RebuildDA3/app/src/main/res/layout/activity_comment.xml" value="0.3625" />
         <entry key="..\:/Android/RebuildDA3/app/src/main/res/layout/activity_editprofile.xml" value="0.3625" />
         <entry key="..\:/Android/RebuildDA3/app/src/main/res/layout/activity_post.xml" value="0.3625" />
@@ -64,11 +70,12 @@
         <entry key="..\:/Android/RebuildDA3/app/src/main/res/layout/fragment_home.xml" value="0.3625" />
         <entry key="..\:/Android/RebuildDA3/app/src/main/res/layout/fragment_user.xml" value="0.3625" />
         <entry key="..\:/Android/RebuildDA3/app/src/main/res/layout/item_comment.xml" value="0.3625" />
+        <entry key="..\:/Android/RebuildDA3/app/src/main/res/layout/item_post.xml" value="0.25" />
         <entry key="..\:/Android/RebuildDA3/app/src/main/res/menu/menu_comment.xml" value="0.3625" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_16_PREVIEW" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
