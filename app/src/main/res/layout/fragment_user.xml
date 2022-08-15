@@ -28,16 +28,15 @@
             android:id="@+id/circleImageView2"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
-            android:src="@drawable/settings"
+            android:src="@drawable/ic_settings"
             app:civ_border_color="@color/grey1"
             app:civ_border_width="2dp"
             app:civ_circle_background_color="@color/grey1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="MissingConstraints"
-            />
+            tools:ignore="MissingConstraints" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -125,12 +124,12 @@
 
                         <ImageView
                             android:id="@+id/imageView5"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginBottom="10dp"
-                            android:src="@drawable/save"
+                            android:src="@drawable/ic_saved"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -166,12 +165,12 @@
 
                         <ImageView
                             android:id="@+id/imageView4"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginBottom="10dp"
-                            android:src="@drawable/favorite"
+                            android:src="@drawable/ic_favorite"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -208,12 +207,12 @@
 
                         <ImageView
                             android:id="@+id/imageView6"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginBottom="10dp"
-                            android:src="@drawable/following"
+                            android:src="@drawable/ic_following"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -249,12 +248,12 @@
 
                         <ImageView
                             android:id="@+id/imageView7"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginBottom="10dp"
-                            android:src="@drawable/follower"
+                            android:src="@drawable/ic_follower"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -297,12 +296,12 @@
 
                         <ImageView
                             android:id="@+id/imageView8"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginBottom="10dp"
-                            android:src="@drawable/groups"
+                            android:src="@drawable/ic_group"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -338,12 +337,12 @@
 
                         <ImageView
                             android:id="@+id/imageView9"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginBottom="10dp"
-                            android:src="@drawable/page"
+                            android:src="@drawable/ic_pages"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -379,12 +378,12 @@
 
                         <ImageView
                             android:id="@+id/imageView10"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginBottom="10dp"
-                            android:src="@drawable/reel"
+                            android:src="@drawable/ic_reels"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -420,12 +419,12 @@
 
                         <ImageView
                             android:id="@+id/imageView11"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginBottom="10dp"
-                            android:src="@drawable/event"
+                            android:src="@drawable/ic_events"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
